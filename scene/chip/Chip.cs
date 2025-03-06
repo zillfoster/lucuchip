@@ -4,7 +4,7 @@ public partial class Chip : Node2D
 {
     public void AssignUnit(Vector2 pos, ChipColor color)
     {
-        if (color == ChipColor.NONE) return ;
+        if (color == ChipColor.None) return ;
         _unitLayer.SetCell(_unitLayer.LocalToMap(ToLocal(pos)), 
                            _chipSourceID,
                            Chip.AtlasCoordinateFrom(color));
@@ -28,14 +28,14 @@ public partial class Chip : Node2D
     {
         switch(color)
         {
-            case ChipColor.BLACK:   return new Vector2I(0, 0);
-            case ChipColor.WHITE:   return new Vector2I(1, 0);
-            case ChipColor.RED:     return new Vector2I(2, 0);
-            case ChipColor.BLUE:    return new Vector2I(3, 0);
-            case ChipColor.GREEN:   return new Vector2I(4, 0);
-            case ChipColor.YELLOW:  return new Vector2I(5, 0);
-            case ChipColor.PURPLE:  return new Vector2I(6, 0);
-            case ChipColor.ORANGE:  return new Vector2I(7, 0);
+            case ChipColor.Black:   return new Vector2I(0, 0);
+            case ChipColor.White:   return new Vector2I(1, 0);
+            case ChipColor.Red:     return new Vector2I(2, 0);
+            case ChipColor.Blue:    return new Vector2I(3, 0);
+            case ChipColor.Green:   return new Vector2I(4, 0);
+            case ChipColor.Yellow:  return new Vector2I(5, 0);
+            case ChipColor.Purple:  return new Vector2I(6, 0);
+            case ChipColor.Orange:  return new Vector2I(7, 0);
             default:                return new Vector2I(0, 0);
         }
     }
