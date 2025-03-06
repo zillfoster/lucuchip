@@ -1,66 +1,41 @@
 using Godot;
-using System;
 
 public partial class TheGame : Node2D
 {
-    // Below this comment, all the members are (somehow) private.
-    // No need to read them unless you are modifying this class.
     private Chip _chip;
-    private MouseHandleArea2D _chipMouseHandle;
     private MouseHandleArea2D _paletteMouseHandle;
-    private TileMapLayer _cursorLayer;
-    private Vector2 _cursorPosition;
-    private ChipColor _chosenColor = ChipColor.NONE;
+    private ChipColor _chosenColor = ChipColor.None;
     public override void _Ready()
     {
         base._Ready();
         _chip = (Chip)GetNode<Node2D>("Chip");
-        _chipMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("Chip/MouseHandleArea2D");
-        _paletteMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("PaletteLayer/MouseHandleArea2D");
-        _cursorLayer = GetNode<TileMapLayer>("CursorLayer");
-    }
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        base._UnhandledInput(@event);
-        if (Input.IsActionJustPressed("act"))
+        MouseHandleArea2D chipMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("Chip/MouseHandleArea2D");
+        chipMouseHandle.MouseLeftPressed += (position) =>
+            _chip.AssignUnit(GetGlobalMousePosition(), _chosenColor);
+        chipMouseHandle.MouseRightPressed += (position) =>
+            _chip.EraseUnit(GetGlobalMousePosition());
+        MouseHandleArea2D paletteMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("PaletteLayer/MouseHandleArea2D");
+        paletteMouseHandle.MouseLeftPressed += (position) =>
+            _chosenColor = ColorFrom(paletteMouseHandle.GetCurrentShapeIdx());
+        paletteMouseHandle.MouseRightPressed += (position) =>
         {
-            if (_chipMouseHandle.IsMouseInsideArea)
-            {
-                _chip.AssignUnit(GetGlobalMousePosition(), _chosenColor);
-                return ;
-            }
-            else if (_paletteMouseHandle.IsMouseInsideArea)
-            {
-                int s = _paletteMouseHandle.IsMouseInsideShape.Count;
-                for (int i = 0; i < s; i++)
-                {
-                    if (_paletteMouseHandle.IsMouseInsideShape[i])
-                    {
-                        _chosenColor = GetPaletteColor(i);
-                        break;
-                    }
-                }
-                return ;
-            }
-        }
-        else if (Input.IsActionJustPressed("cancel"))
-        {
-
-        }
+            if (_chosenColor == ColorFrom(paletteMouseHandle.GetCurrentShapeIdx()))
+                _chosenColor = ChipColor.None;
+        };
     }
-    private static ChipColor GetPaletteColor(int idx)
+    private static ChipColor ColorFrom(int idx)
     {
         switch(idx)
         {
-            case 0:  return ChipColor.BLACK;
-            case 1:  return ChipColor.WHITE;
-            case 2:  return ChipColor.RED;
-            case 3:  return ChipColor.BLUE;
-            case 4:  return ChipColor.GREEN;
-            case 5:  return ChipColor.YELLOW;
-            case 6:  return ChipColor.PURPLE;
-            case 7:  return ChipColor.ORANGE;
-            default: return ChipColor.NONE;
+            case 0:  return ChipColor.Black;
+            case 1:  return ChipColor.White;
+            case 2:  return ChipColor.Red;
+            case 3:  return ChipColor.Blue;
+            case 4:  return ChipColor.Green;
+            case 5:  return ChipColor.Yellow;
+            case 6:  return ChipColor.Purple;
+            case 7:  return ChipColor.Orange;
+            default: return ChipColor.None;
         }
     }
 }
