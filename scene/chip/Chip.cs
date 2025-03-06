@@ -6,24 +6,25 @@ public partial class Chip : Node2D
     {
         if (color == ChipColor.None || color == ChipColor.Clear) return;
         if (color == ChipColor.Erase) { this.EraseUnit(position); return; }
-        _unitLayer.SetCell(_unitLayer.LocalToMap(ToLocal(position)), 
-                           _chipSourceID,
-                           Chip.AtlasCoordinateFrom(color));
+        _layer.SetCell(_layer.LocalToMap(ToLocal(position)),
+                       _sourceID,
+                       Chip.AtlasCoordinateFrom(color));
     }
     public void EraseUnit(Vector2 position)
-        => _unitLayer.EraseCell(_unitLayer.LocalToMap(ToLocal(position)));
+        => _layer.EraseCell(_layer.LocalToMap(ToLocal(position)));
     public void ClearUnit()
-        => _unitLayer.Clear();
+        => _layer.Clear();
+    
     
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
-    private TileMapLayer _unitLayer;
-    private int _chipSourceID;
+    private TileMapLayer _layer;
+    private int _sourceID;
     public override void _Ready()
     {
         base._Ready();
-        _unitLayer = GetNode<TileMapLayer>("UnitLayer");
-        _chipSourceID = _unitLayer.TileSet.GetSourceId(0);
+        _layer = GetNode<TileMapLayer>("ChipLayer");
+        _sourceID = _layer.TileSet.GetSourceId(0);
     }
     private static Vector2I AtlasCoordinateFrom(ChipColor color)
     {

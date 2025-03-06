@@ -10,6 +10,12 @@ public partial class MouseHandleArea2D : Area2D
         for (int i = 0; i < _childCount; i++) { if (_isMouseInsideShape[i]) return i; }
         return -1;
     }
+    // Warning:
+    // Disable "IsLeavingProtected" can lead to buggy behavior,
+    // because this class can NOT handle any mouse input outside its area.
+    // If you really need to do it, you should emit "MouseLeftReleased"
+    // and "MouseRightReleased" correctly (outside this class).
+    public bool IsLeavingProtected { get; set; } = true;
     [Signal]
     public delegate void MouseLeftPressedEventHandler(Vector2 position);
     [Signal]
@@ -19,11 +25,12 @@ public partial class MouseHandleArea2D : Area2D
     [Signal]
     public delegate void MouseRightReleasedEventHandler(Vector2 position);
     [Signal]
-    public delegate void MouseDraggedEventHandler(Vector2 position);
+    public delegate void MouseDraggedEventHandler(Vector2 position, Vector2 relative);
     [Signal]
-    public delegate void MouseLeftDraggedEventHandler(Vector2 position);
+    public delegate void MouseLeftDraggedEventHandler(Vector2 position, Vector2 relative);
     [Signal]
-    public delegate void MouseRightDraggedEventHandler(Vector2 position);
+    public delegate void MouseRightDraggedEventHandler(Vector2 position, Vector2 relative);
+
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
@@ -39,51 +46,56 @@ public partial class MouseHandleArea2D : Area2D
     }
     private void OnInputEvent(Node viewport, InputEvent @event, int shapeIdx)
     {
-        if (@event is InputEventMouseButton mouseButton)
+        if (@event is InputEventMouseButton button)
         {
-            if (mouseButton.Pressed)
+            if (button.Pressed)
             {
-                _lastPressedButton = mouseButton.ButtonIndex;
-                switch(mouseButton.ButtonIndex)
+                _lastPressedButton = button.ButtonIndex;
+                switch(button.ButtonIndex)
                 {
-                    case MouseButton.Left: 
-                        EmitSignal(SignalName.MouseLeftPressed, mouseButton.Position);
+                    case MouseButton.Left:
+                        EmitSignal(SignalName.MouseLeftPressed, button.Position);
                         return;
                     case MouseButton.Right:
-                        EmitSignal(SignalName.MouseRightPressed, mouseButton.Position);
+                        EmitSignal(SignalName.MouseRightPressed, button.Position);
                         return;
                 }
             }
             else
             {
-                if (_lastPressedButton == mouseButton.ButtonIndex) _lastPressedButton = MouseButton.None;
-                switch(mouseButton.ButtonIndex)
+                if (_lastPressedButton == button.ButtonIndex) _lastPressedButton = MouseButton.None;
+                switch(button.ButtonIndex)
                 {
                     case MouseButton.Left: 
-                        EmitSignal(SignalName.MouseLeftReleased, mouseButton.Position);
+                        EmitSignal(SignalName.MouseLeftReleased, button.Position);
                         return;
                     case MouseButton.Right:
-                        EmitSignal(SignalName.MouseRightReleased, mouseButton.Position);
+                        EmitSignal(SignalName.MouseRightReleased, button.Position);
                         return;
                 }
             }
         }
-        else if (@event is InputEventMouseMotion mouseMotion)
+        else if (@event is InputEventMouseMotion motion)
         {
-            EmitSignal(SignalName.MouseDragged, mouseMotion.Position);
+            
+            EmitSignal(SignalName.MouseDragged, motion.Position, motion.Relative);
             switch(_lastPressedButton)
             {
                 case MouseButton.Left:
-                    EmitSignal(SignalName.MouseLeftDragged, mouseMotion.Position);
+                    EmitSignal(SignalName.MouseLeftDragged, motion.Position, motion.Relative);
                     return;
                 case MouseButton.Right:
-                    EmitSignal(SignalName.MouseRightDragged, mouseMotion.Position);
+                    EmitSignal(SignalName.MouseRightDragged, motion.Position, motion.Relative);
                     return;
             }
         }
     }
     private void OnMouseEntered() { _isMouseInsideArea = true; }
-    private void OnMouseExited() { _isMouseInsideArea = false; }
+    private void OnMouseExited()
+    {
+        _isMouseInsideArea = false; 
+        if (IsLeavingProtected) _lastPressedButton = MouseButton.None;
+    }
     private void OnMouseShapeEntered(int shapeIdx) { _isMouseInsideShape[shapeIdx] = true; }
     private void OnMouseShapeExited(int shapeIdx) { _isMouseInsideShape[shapeIdx] = false; }
 }
