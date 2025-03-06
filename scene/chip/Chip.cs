@@ -7,7 +7,11 @@ public partial class Chip : Node2D
         if (color == ChipColor.NONE) return ;
         _unitLayer.SetCell(_unitLayer.LocalToMap(ToLocal(pos)), 
                            _chipSourceID,
-                           Chip.GetAtlasCoordinate(color));
+                           Chip.AtlasCoordinateFrom(color));
+    }
+    public void EraseUnit(Vector2 pos)
+    {
+        _unitLayer.EraseCell(_unitLayer.LocalToMap(ToLocal(pos)));
     }
     
     // Below this comment, all the members are (somehow) private.
@@ -20,7 +24,7 @@ public partial class Chip : Node2D
         _unitLayer = GetNode<TileMapLayer>("UnitLayer");
         _chipSourceID = _unitLayer.TileSet.GetSourceId(0);
     }
-    private static Vector2I GetAtlasCoordinate(ChipColor color)
+    private static Vector2I AtlasCoordinateFrom(ChipColor color)
     {
         switch(color)
         {
