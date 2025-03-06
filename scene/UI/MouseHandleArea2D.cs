@@ -10,12 +10,6 @@ public partial class MouseHandleArea2D : Area2D
         for (int i = 0; i < _childCount; i++) { if (_isMouseInsideShape[i]) return i; }
         return -1;
     }
-    // Warning:
-    // Disable "IsLeavingProtected" can lead to buggy behavior,
-    // because this class can NOT handle any mouse input outside its area.
-    // If you really need to do it, you should emit "MouseLeftReleased"
-    // and "MouseRightReleased" correctly (outside this class).
-    public bool IsLeavingProtected { get; set; } = true;
     [Signal]
     public delegate void MouseLeftPressedEventHandler(Vector2 position);
     [Signal]
@@ -30,6 +24,15 @@ public partial class MouseHandleArea2D : Area2D
     public delegate void MouseLeftDraggedEventHandler(Vector2 position, Vector2 relative);
     [Signal]
     public delegate void MouseRightDraggedEventHandler(Vector2 position, Vector2 relative);
+    // Warning:
+    // Disable "IsProtected" can lead to buggy behavior.
+    // If you really need to do it, you have to receive "ExitedUnsafely"
+    // and emit "EnteredUnsafely" correctly (outside this class).
+    public bool IsProtected { get; set; } = true;
+    [Signal]
+    public delegate void EnteredUnsafelyEventHandler(MouseButton lastButton);
+    [Signal]
+    public delegate void ExitedUnsafelyEventHandler(MouseButton lastButton);
 
 
     // Below this comment, all the members are (somehow) private.
@@ -37,7 +40,7 @@ public partial class MouseHandleArea2D : Area2D
     private bool _isMouseInsideArea = false;
     private List<bool> _isMouseInsideShape = new();
     private int _childCount;
-    private MouseButton _lastPressedButton = MouseButton.None;
+    private MouseButton _lastButton = MouseButton.None;
     public override void _Ready()
     {
         base._Ready();
@@ -50,7 +53,7 @@ public partial class MouseHandleArea2D : Area2D
         {
             if (button.Pressed)
             {
-                _lastPressedButton = button.ButtonIndex;
+                _lastButton = button.ButtonIndex;
                 switch(button.ButtonIndex)
                 {
                     case MouseButton.Left:
@@ -63,7 +66,7 @@ public partial class MouseHandleArea2D : Area2D
             }
             else
             {
-                if (_lastPressedButton == button.ButtonIndex) _lastPressedButton = MouseButton.None;
+                if (_lastButton == button.ButtonIndex) _lastButton = MouseButton.None;
                 switch(button.ButtonIndex)
                 {
                     case MouseButton.Left: 
@@ -79,7 +82,7 @@ public partial class MouseHandleArea2D : Area2D
         {
             
             EmitSignal(SignalName.MouseDragged, motion.Position, motion.Relative);
-            switch(_lastPressedButton)
+            switch(_lastButton)
             {
                 case MouseButton.Left:
                     EmitSignal(SignalName.MouseLeftDragged, motion.Position, motion.Relative);
@@ -90,11 +93,13 @@ public partial class MouseHandleArea2D : Area2D
             }
         }
     }
+    private void OnEnteredUnsafely(MouseButton lastButton) { _lastButton = lastButton; }
     private void OnMouseEntered() { _isMouseInsideArea = true; }
     private void OnMouseExited()
     {
-        _isMouseInsideArea = false; 
-        if (IsLeavingProtected) _lastPressedButton = MouseButton.None;
+        _isMouseInsideArea = false;
+        if (!IsProtected) EmitSignal(SignalName.ExitedUnsafely, (int)_lastButton);
+        _lastButton = MouseButton.None;
     }
     private void OnMouseShapeEntered(int shapeIdx) { _isMouseInsideShape[shapeIdx] = true; }
     private void OnMouseShapeExited(int shapeIdx) { _isMouseInsideShape[shapeIdx] = false; }

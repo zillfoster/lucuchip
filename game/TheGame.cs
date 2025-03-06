@@ -38,6 +38,7 @@ public partial class TheGame : Node2D
 
         #region 
         MouseHandleArea2D paletteMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("PaletteLayer/MouseHandleArea2D");
+        TileMapLayer selectionLayer = GetNode<TileMapLayer>("SelectionLayer");
         // click left mouse button to select color on palette
         paletteMouseHandle.MouseLeftPressed += (position) =>
         {
@@ -48,13 +49,41 @@ public partial class TheGame : Node2D
                 return;
             }
             _chosenColor = color;
+            selectionLayer.Clear();
+            selectionLayer.SetCell(selectionLayer.LocalToMap(position),
+                                   selectionLayer.TileSet.GetSourceId(0),
+                                   new Vector2I(0, 6));
         };
         // click right mouse button to cancel selection on palette
         paletteMouseHandle.MouseRightPressed += (position) =>
         {
             if (_chosenColor == TheGame.ColorFrom(paletteMouseHandle.GetCurrentShapeIdx()))
+            {
                 _chosenColor = ChipColor.None;
+                selectionLayer.Clear();
+            }
         };
+        #endregion
+
+        #region 
+        TileMapLayer cursorLayer = GetNode<TileMapLayer>("CursorLayer");
+        int sourceID = cursorLayer.TileSet.GetSourceId(0);
+        chipMouseHandle.MouseDragged += (position, relative) => 
+        {
+            cursorLayer.Clear();
+            cursorLayer.SetCell(cursorLayer.LocalToMap(position),
+                                sourceID,
+                                TheGame.AtlasCoordinateFrom(_chosenColor));
+        };
+        chipMouseHandle.MouseExited += () => cursorLayer.Clear();
+        paletteMouseHandle.MouseDragged += (position, relative) => 
+        {
+            cursorLayer.Clear();
+            cursorLayer.SetCell(cursorLayer.LocalToMap(position),
+                                sourceID,
+                                new Vector2I(1, 6));
+        };
+        paletteMouseHandle.MouseExited += () => cursorLayer.Clear();
         #endregion
     }
     private static ChipColor ColorFrom(int idx)
@@ -72,6 +101,21 @@ public partial class TheGame : Node2D
             case 8:  return ChipColor.Erase;
             case 9:  return ChipColor.Clear;
             default: return ChipColor.None;
+        }
+    }
+    private static Vector2I AtlasCoordinateFrom(ChipColor color)
+    {
+        switch(color)
+        {
+            case ChipColor.Black:   return new Vector2I(0, 1);
+            case ChipColor.White:   return new Vector2I(1, 1);
+            case ChipColor.Red:     return new Vector2I(2, 1);
+            case ChipColor.Blue:    return new Vector2I(3, 1);
+            case ChipColor.Green:   return new Vector2I(4, 1);
+            case ChipColor.Yellow:  return new Vector2I(5, 1);
+            case ChipColor.Purple:  return new Vector2I(6, 1);
+            case ChipColor.Orange:  return new Vector2I(7, 1);
+            default:                return new Vector2I(-1, -1);
         }
     }
 }
