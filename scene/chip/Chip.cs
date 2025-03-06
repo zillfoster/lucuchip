@@ -4,13 +4,16 @@ public partial class Chip : Node2D
 {
     public void AssignUnit(Vector2 position, ChipColor color)
     {
-        if (color == ChipColor.None) { EraseUnit(position); return; }
+        if (color == ChipColor.None || color == ChipColor.Clear) return;
+        if (color == ChipColor.Erase) { this.EraseUnit(position); return; }
         _unitLayer.SetCell(_unitLayer.LocalToMap(ToLocal(position)), 
                            _chipSourceID,
                            Chip.AtlasCoordinateFrom(color));
     }
     public void EraseUnit(Vector2 position)
         => _unitLayer.EraseCell(_unitLayer.LocalToMap(ToLocal(position)));
+    public void ClearUnit()
+        => _unitLayer.Clear();
     
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.

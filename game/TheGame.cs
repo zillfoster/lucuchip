@@ -11,15 +11,27 @@ public partial class TheGame : Node2D
         _chip = (Chip)GetNode<Node2D>("Chip");
         MouseHandleArea2D chipMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("Chip/MouseHandleArea2D");
         chipMouseHandle.MouseLeftPressed += (position) =>
-            _chip.AssignUnit(GetGlobalMousePosition(), _chosenColor);
+            _chip.AssignUnit(position, _chosenColor);
         chipMouseHandle.MouseRightPressed += (position) =>
-            _chip.EraseUnit(GetGlobalMousePosition());
+            _chip.EraseUnit(position);
+        chipMouseHandle.MouseLeftDragged += (position) =>
+            _chip.AssignUnit(position, _chosenColor);
+        chipMouseHandle.MouseRightDragged += (position) =>
+            _chip.EraseUnit(position);
         MouseHandleArea2D paletteMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("PaletteLayer/MouseHandleArea2D");
         paletteMouseHandle.MouseLeftPressed += (position) =>
-            _chosenColor = ColorFrom(paletteMouseHandle.GetCurrentShapeIdx());
+        {
+            ChipColor color = TheGame.ColorFrom(paletteMouseHandle.GetCurrentShapeIdx());
+            if (color == ChipColor.Clear)
+            {
+                _chip.ClearUnit();
+                return;
+            }
+            _chosenColor = color;
+        };
         paletteMouseHandle.MouseRightPressed += (position) =>
         {
-            if (_chosenColor == ColorFrom(paletteMouseHandle.GetCurrentShapeIdx()))
+            if (_chosenColor == TheGame.ColorFrom(paletteMouseHandle.GetCurrentShapeIdx()))
                 _chosenColor = ChipColor.None;
         };
     }
@@ -35,6 +47,8 @@ public partial class TheGame : Node2D
             case 5:  return ChipColor.Yellow;
             case 6:  return ChipColor.Purple;
             case 7:  return ChipColor.Orange;
+            case 8:  return ChipColor.Erase;
+            case 9:  return ChipColor.Clear;
             default: return ChipColor.None;
         }
     }
