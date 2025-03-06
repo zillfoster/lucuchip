@@ -48,10 +48,10 @@ public partial class MouseHandleArea2D : Area2D
                 {
                     case MouseButton.Left: 
                         EmitSignal(SignalName.MouseLeftPressed, mouseButton.Position);
-                        return ;
+                        return;
                     case MouseButton.Right:
                         EmitSignal(SignalName.MouseRightPressed, mouseButton.Position);
-                        return ;
+                        return;
                 }
             }
             else
@@ -61,10 +61,10 @@ public partial class MouseHandleArea2D : Area2D
                 {
                     case MouseButton.Left: 
                         EmitSignal(SignalName.MouseLeftReleased, mouseButton.Position);
-                        return ;
+                        return;
                     case MouseButton.Right:
                         EmitSignal(SignalName.MouseRightReleased, mouseButton.Position);
-                        return ;
+                        return;
                 }
             }
         }
@@ -75,10 +75,10 @@ public partial class MouseHandleArea2D : Area2D
             {
                 case MouseButton.Left:
                     EmitSignal(SignalName.MouseLeftDragged, mouseMotion.Position);
-                    return ;
+                    return;
                 case MouseButton.Right:
                     EmitSignal(SignalName.MouseRightDragged, mouseMotion.Position);
-                    return ;
+                    return;
             }
         }
     }
