@@ -10,4 +10,8 @@ public enum ChipColor {
 	Orange,
 	Erase,
 	Clear,
+	Grid,
+	New,
+	Load,
+	Save,
 }
