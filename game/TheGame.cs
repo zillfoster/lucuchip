@@ -6,6 +6,8 @@ using PaletteColor = ChipColor;
 public partial class TheGame : Node2D
 {
     private PaletteColor _chosenColor = PaletteColor.None;
+    [Signal]
+    public delegate void InputEventEventHandler(InputEvent @event);
     public override void _Ready()
     {
         base._Ready();
@@ -23,6 +25,10 @@ public partial class TheGame : Node2D
         #endregion
 
         #region 
+        InputEvent += chipMouseHandle.OnOutsideInputEvent;
+        #endregion
+
+        #region 
         int tileLength = chipLayer.TileSet.TileSize.X;
         Rect2 chipRect = shape2D.Shape.GetRect().Abs();
         Action<Vector2, Vector2, Action<Vector2>> drag = (position, relative, operation) =>
@@ -31,7 +37,7 @@ public partial class TheGame : Node2D
             for (int i = 0; i <= t; i++)
             {
                 if (chipRect.HasPoint(shape2D.ToLocal(position))) operation(position);
-                position += relative/t;
+                position += relative / t;
             }
         };
         // click left mouse button to paint
@@ -114,7 +120,7 @@ public partial class TheGame : Node2D
             Vector2I shadow = TheGame.AtlasCoordinateFrom(_chosenColor);
             if (chip.GetUnit(position) == _chosenColor) return;
             if (_chosenColor == PaletteColor.Erase && 
-                chip.GetUnit(position) == PaletteColor.Red) shadow = new(4, 2);
+                chip.GetUnit(position) == PaletteColor.Red) shadow = new Vector2I(4, 2);
             cursorLayer.SetCell(cursorLayer.LocalToMap(position),
                                 cursorSourceID,
                                 shadow);
@@ -124,7 +130,7 @@ public partial class TheGame : Node2D
             cursorLayer.Clear();
             cursorLayer.SetCell(cursorLayer.LocalToMap(position),
                                 cursorSourceID,
-                                new(0, 2));
+                                new Vector2I(0, 2));
         };
         chipMouseHandle.MouseLeftPressed += (position) => cursorLeftUpdate(position);
         chipMouseHandle.MouseRightReleased += (position) => cursorLeftUpdate(position);
@@ -141,6 +147,11 @@ public partial class TheGame : Node2D
                                 new Vector2I(1, 6));
         };
         #endregion
+    }
+    public override void _Input(InputEvent @event)
+    {
+        base._Input(@event);
+        EmitSignal(SignalName.InputEvent, @event);
     }
     private static PaletteColor ColorFrom(int idx)
     {
