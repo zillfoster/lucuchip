@@ -11,7 +11,7 @@ public enum ChipColor {
 	Erase,
 	Clear,
 	Grid,
-	New,
-	Load,
-	Save,
+	Step,
+	Play,
+	Speed,
 }

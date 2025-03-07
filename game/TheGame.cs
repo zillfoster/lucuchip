@@ -94,9 +94,9 @@ public partial class TheGame : Node2D
                                              new Vector2I(3, 3));
                     }
                     return;
-                case PaletteColor.New:
-                case PaletteColor.Load:
-                case PaletteColor.Save:
+                case PaletteColor.Step:
+                case PaletteColor.Play:
+                case PaletteColor.Speed:
                 default: 
                     return;
             }
@@ -157,20 +157,20 @@ public partial class TheGame : Node2D
     {
         switch(idx)
         {
-            case 0:  return PaletteColor.Black;
-            case 1:  return PaletteColor.White;
-            case 2:  return PaletteColor.Red;
-            case 3:  return PaletteColor.Blue;
-            case 4:  return PaletteColor.Green;
-            case 5:  return PaletteColor.Yellow;
-            case 6:  return PaletteColor.Purple;
-            case 7:  return PaletteColor.Orange;
-            case 8:  return PaletteColor.Erase;
+            case 0:  return PaletteColor.Erase;
+            case 1:  return PaletteColor.Black;
+            case 2:  return PaletteColor.White;
+            case 3:  return PaletteColor.Red;
+            case 4:  return PaletteColor.Blue;
+            case 5:  return PaletteColor.Green;
+            case 6:  return PaletteColor.Yellow;
+            case 7:  return PaletteColor.Purple;
+            case 8:  return PaletteColor.Orange;
             case 9:  return PaletteColor.Clear;
-            case 10:  return PaletteColor.Grid;
-            case 11:  return PaletteColor.New;
-            case 12:  return PaletteColor.Load;
-            case 13:  return PaletteColor.Save;
+            case 10:  return PaletteColor.Step;
+            case 11:  return PaletteColor.Play;
+            case 12:  return PaletteColor.Speed;
+            case 13:  return PaletteColor.Grid;
             default: return PaletteColor.None;
         }
     }
