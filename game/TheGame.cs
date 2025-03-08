@@ -154,8 +154,8 @@ public partial class TheGame : Node2D
         #endregion
 
         #region 
-        Variant? v = JSONSaver.Instance.PleaseSaveAndTryLoad("framedChipBackgroundLayer.Visible",
-                                                             () => framedChipBackgroundLayer.Visible);
+        Variant? v = JSONSaver.PleaseSaveAndTryLoad("framedChipBackgroundLayer.Visible",
+                                                    () => framedChipBackgroundLayer.Visible);
         if (v.HasValue) framedChipBackgroundLayer.Visible = (bool)v;
         #endregion
     }
