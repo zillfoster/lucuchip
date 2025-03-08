@@ -11,6 +11,14 @@ public partial class JSONSaver : Node
             return JSONSaver._loadedData[saveKey];
         else return null;
     }
+
+
+    // Below this comment, all the members are (somehow) private.
+    // No need to read them unless you are modifying this class.
+    private static JSONSaver Instance;
+    private const string SAVE_PATH = "user://save.json";
+    private static readonly Dictionary<string, Variant> _loadedData = new();
+    private static readonly Dictionary<string, Func<Variant>> _willSaveData = new();
     public override void _Ready()
     {
         base._Ready();
@@ -28,10 +36,6 @@ public partial class JSONSaver : Node
             foreach(var (k, v) in loadedData) _loadedData.Add(k, v);
         }
     }
-    private static JSONSaver Instance;
-    private const string SAVE_PATH = "user://save.json";
-    private static readonly Dictionary<string, Variant> _loadedData = new();
-    private static readonly Dictionary<string, Func<Variant>> _willSaveData = new();
     public override void _Notification(int what)
     {
         if (what == 1006) // Mainloop.NOTIFICATION_WM_CLOSE_REQUEST = 1006
