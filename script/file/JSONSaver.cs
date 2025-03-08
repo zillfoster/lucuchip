@@ -5,10 +5,10 @@ using System.Collections.Generic;
 public partial class JSONSaver : Node
 {
     public static JSONSaver Instance;
-    public Variant? PleaseSave(string k, Func<Variant> fv)
+    public Variant? PleaseSaveAndTryLoad(string saveKey, Func<Variant> saveMethod)
     {
-        _willSaveData[k] = fv;
-        if (_loadedData.ContainsKey(k)) return _loadedData[k];
+        _willSaveData[saveKey] = saveMethod;
+        if (_loadedData.ContainsKey(saveKey)) return _loadedData[saveKey];
         else return null;
     }
     public override void _Ready()
