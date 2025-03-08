@@ -28,7 +28,11 @@ public partial class MouseHandleArea2D : Area2D
     // If consistent behavior is needed when leaving this Area2D, call OnOutsideInputEvent.
     public void OnOutsideInputEvent(InputEvent @event)
     {
-        if (_isMouseInsideArea) return;
+        if (_isMouseInsideArea)
+        {
+            OnInputEvent(GetViewport(), @event, GetCurrentShapeIdx());
+            return;
+        }
         _isHandledOutside = true;
         if (@event is InputEventMouseButton button && 
             !button.Pressed && 
@@ -83,7 +87,6 @@ public partial class MouseHandleArea2D : Area2D
         }
         else if (@event is InputEventMouseMotion motion)
         {
-            
             EmitSignal(SignalName.MouseDragged, motion.Position, motion.Relative);
             switch(_lastButton)
             {

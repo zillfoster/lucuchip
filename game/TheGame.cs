@@ -11,6 +11,7 @@ public partial class TheGame : Node2D
     public override void _Ready()
     {
         base._Ready();
+        Input.UseAccumulatedInput = false;
 
         #region 
         TileMapLayer framedChipBackgroundLayer = GetNode<TileMapLayer>("FramedChipBackgroundLayer");
@@ -26,6 +27,7 @@ public partial class TheGame : Node2D
 
         #region 
         InputEvent += chipMouseHandle.OnOutsideInputEvent;
+        InputEvent += paletteMouseHandle.OnOutsideInputEvent;
         #endregion
 
         #region 
@@ -152,6 +154,20 @@ public partial class TheGame : Node2D
     {
         base._Input(@event);
         EmitSignal(SignalName.InputEvent, @event);
+    }
+    public void OnGUIInput(Node viewport, InputEvent @event) 
+    {
+        if (@event is InputEventMouseButton button)
+        {
+            button.Position = GetViewport().GetMousePosition();
+            EmitSignal(SignalName.InputEvent, button);
+        }
+        else if (@event is InputEventMouseMotion motion)
+        {
+            motion.Position = GetViewport().GetMousePosition();
+            EmitSignal(SignalName.InputEvent, motion);
+        }
+        else EmitSignal(SignalName.InputEvent, @event);
     }
     private static PaletteColor ColorFrom(int idx)
     {
