@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class MouseHandleArea2D : Area2D
+public partial class MouseHandlerArea2D : Area2D
 {
     public bool IsMouseInsideArea => _isMouseInsideArea;
     public IReadOnlyList<bool> IsMouseInsideShape => _isMouseInsideShape;

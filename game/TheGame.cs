@@ -22,15 +22,15 @@ public partial class TheGame : Node2D
         TileMapLayer chipLayer = GetNode<TileMapLayer>("Chip/ChipLayer");
         TileMapLayer cursorLayer = GetNode<TileMapLayer>("CursorLayer");
         TileMapLayer selectionLayer = GetNode<TileMapLayer>("SelectionLayer");
-        MouseHandleArea2D paletteMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("PaletteLayer/MouseHandleArea2D");
-        MouseHandleArea2D chipMouseHandle = (MouseHandleArea2D)GetNode<Area2D>("Chip/MouseHandleArea2D");
-        CollisionShape2D shape2D = chipMouseHandle.GetNode<CollisionShape2D>("CollisionShape2D");
+        MouseHandlerArea2D paletteMouseHandler = (MouseHandlerArea2D)GetNode<Area2D>("PaletteLayer/MouseHandlerArea2D");
+        MouseHandlerArea2D chipMouseHandler = (MouseHandlerArea2D)GetNode<Area2D>("Chip/MouseHandlerArea2D");
+        CollisionShape2D shape2D = chipMouseHandler.GetNode<CollisionShape2D>("CollisionShape2D");
         #endregion
 
         #region 
-        InputEvent += (@event) => chipMouseHandle.OnOutsideInputEvent(@event);
-        GUIInputEvent += (@event) => chipMouseHandle.OnOutsideInputEvent(@event, true);
-        GUIInputEvent += (@event) => paletteMouseHandle.OnOutsideInputEvent(@event, true);
+        InputEvent += (@event) => chipMouseHandler.OnOutsideInputEvent(@event);
+        GUIInputEvent += (@event) => chipMouseHandler.OnOutsideInputEvent(@event, true);
+        GUIInputEvent += (@event) => paletteMouseHandler.OnOutsideInputEvent(@event, true);
         #endregion
 
         #region 
@@ -46,23 +46,23 @@ public partial class TheGame : Node2D
             }
         };
         // click left mouse button to paint
-        chipMouseHandle.MouseLeftPressed += (position) => chip.AssignUnit(position, _chosenColor);
+        chipMouseHandler.MouseLeftPressed += (position) => chip.AssignUnit(position, _chosenColor);
         // click right mouse button to erase
-        chipMouseHandle.MouseRightPressed += (position) => chip.EraseUnit(position);
+        chipMouseHandler.MouseRightPressed += (position) => chip.EraseUnit(position);
         // drag when clicking left mouse button to paint continuously
-        chipMouseHandle.MouseLeftDragged += (position, relative) => 
+        chipMouseHandler.MouseLeftDragged += (position, relative) => 
             drag(position, relative, (p) => chip.AssignUnit(p, _chosenColor));
         // drag when clicking right mouse button to erase continuously
-        chipMouseHandle.MouseRightDragged += (position, relative) =>
+        chipMouseHandler.MouseRightDragged += (position, relative) =>
             drag(position, relative, (p) => chip.EraseUnit(p));
         #endregion
 
         #region 
         int paletteSourceID = paletteLayer.TileSet.GetSourceId(0);
         // click left mouse button to select color on palette
-        paletteMouseHandle.MouseLeftPressed += (position) =>
+        paletteMouseHandler.MouseLeftPressed += (position) =>
         {
-            PaletteColor color = TheGame.ColorFrom(paletteMouseHandle.GetCurrentShapeIdx());
+            PaletteColor color = TheGame.ColorFrom(paletteMouseHandler.GetCurrentShapeIdx());
             switch(color)
             {
                 case PaletteColor.Black:
@@ -107,9 +107,9 @@ public partial class TheGame : Node2D
             }
         };
         // click right mouse button to cancel selection on palette
-        paletteMouseHandle.MouseRightPressed += (position) =>
+        paletteMouseHandler.MouseRightPressed += (position) =>
         {
-            if (_chosenColor == TheGame.ColorFrom(paletteMouseHandle.GetCurrentShapeIdx()))
+            if (_chosenColor == TheGame.ColorFrom(paletteMouseHandler.GetCurrentShapeIdx()))
             {
                 _chosenColor = PaletteColor.None;
                 selectionLayer.Clear();
@@ -137,14 +137,14 @@ public partial class TheGame : Node2D
                                 cursorSourceID,
                                 new Vector2I(0, 2));
         };
-        chipMouseHandle.MouseLeftPressed += (position) => cursorLeftUpdate(position);
-        chipMouseHandle.MouseRightReleased += (position) => cursorLeftUpdate(position);
-        chipMouseHandle.MouseDragged += (position, relative) => cursorLeftUpdate(position);
-        chipMouseHandle.MouseRightPressed += (position) => cursorRightUpdate(position);
-        chipMouseHandle.MouseRightDragged += (position, relative) => cursorRightUpdate(position);
-        chipMouseHandle.MouseExited += () => cursorLayer.Clear();
-        paletteMouseHandle.MouseExited += () => cursorLayer.Clear();
-        paletteMouseHandle.MouseDragged += (position, relative) => 
+        chipMouseHandler.MouseLeftPressed += (position) => cursorLeftUpdate(position);
+        chipMouseHandler.MouseRightReleased += (position) => cursorLeftUpdate(position);
+        chipMouseHandler.MouseDragged += (position, relative) => cursorLeftUpdate(position);
+        chipMouseHandler.MouseRightPressed += (position) => cursorRightUpdate(position);
+        chipMouseHandler.MouseRightDragged += (position, relative) => cursorRightUpdate(position);
+        chipMouseHandler.MouseExited += () => cursorLayer.Clear();
+        paletteMouseHandler.MouseExited += () => cursorLayer.Clear();
+        paletteMouseHandler.MouseDragged += (position, relative) => 
         {
             cursorLayer.Clear();
             cursorLayer.SetCell(cursorLayer.LocalToMap(position),
