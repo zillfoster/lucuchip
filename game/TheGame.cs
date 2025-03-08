@@ -152,6 +152,12 @@ public partial class TheGame : Node2D
                                 new Vector2I(1, 6));
         };
         #endregion
+
+        #region 
+        Variant? v = JSONSaver.Instance.PleaseSave("framedChipBackgroundLayer.Visible",
+                                                   () => framedChipBackgroundLayer.Visible);
+        if (v.HasValue) framedChipBackgroundLayer.Visible = (bool)v;
+        #endregion
     }
     public override void _Input(InputEvent @event)
     {
