@@ -26,11 +26,11 @@ public partial class MouseHandleArea2D : Area2D
     public delegate void MouseRightDraggedEventHandler(Vector2 position, Vector2 relative);
     
     // If consistent behavior is needed when leaving this Area2D, call OnOutsideInputEvent.
-    public void OnOutsideInputEvent(InputEvent @event)
+    public void OnOutsideInputEvent(InputEvent @event, bool isInsideEnabled = false)
     {
         if (_isMouseInsideArea)
         {
-            OnInputEvent(GetViewport(), @event, GetCurrentShapeIdx());
+            if (isInsideEnabled) OnInputEvent(GetViewport(), @event, GetCurrentShapeIdx());
             return;
         }
         _isHandledOutside = true;

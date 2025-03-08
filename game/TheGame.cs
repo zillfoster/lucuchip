@@ -8,6 +8,8 @@ public partial class TheGame : Node2D
     private PaletteColor _chosenColor = PaletteColor.None;
     [Signal]
     public delegate void InputEventEventHandler(InputEvent @event);
+    [Signal]
+    public delegate void GUIInputEventEventHandler(InputEvent @event);
     public override void _Ready()
     {
         base._Ready();
@@ -26,8 +28,9 @@ public partial class TheGame : Node2D
         #endregion
 
         #region 
-        InputEvent += chipMouseHandle.OnOutsideInputEvent;
-        InputEvent += paletteMouseHandle.OnOutsideInputEvent;
+        InputEvent += (@event) => chipMouseHandle.OnOutsideInputEvent(@event);
+        GUIInputEvent += (@event) => chipMouseHandle.OnOutsideInputEvent(@event, true);
+        GUIInputEvent += (@event) => paletteMouseHandle.OnOutsideInputEvent(@event, true);
         #endregion
 
         #region 
@@ -160,14 +163,14 @@ public partial class TheGame : Node2D
         if (@event is InputEventMouseButton button)
         {
             button.Position = GetViewport().GetMousePosition();
-            EmitSignal(SignalName.InputEvent, button);
+            EmitSignal(SignalName.GUIInputEvent, button);
         }
         else if (@event is InputEventMouseMotion motion)
         {
             motion.Position = GetViewport().GetMousePosition();
-            EmitSignal(SignalName.InputEvent, motion);
+            EmitSignal(SignalName.GUIInputEvent, motion);
         }
-        else EmitSignal(SignalName.InputEvent, @event);
+        else EmitSignal(SignalName.GUIInputEvent, @event);
     }
     private static PaletteColor ColorFrom(int idx)
     {
@@ -183,10 +186,10 @@ public partial class TheGame : Node2D
             case 7:  return PaletteColor.Purple;
             case 8:  return PaletteColor.Orange;
             case 9:  return PaletteColor.Clear;
-            case 10:  return PaletteColor.Step;
-            case 11:  return PaletteColor.Play;
-            case 12:  return PaletteColor.Speed;
-            case 13:  return PaletteColor.Grid;
+            case 10: return PaletteColor.Step;
+            case 11: return PaletteColor.Play;
+            case 12: return PaletteColor.Speed;
+            case 13: return PaletteColor.Grid;
             default: return PaletteColor.None;
         }
     }
