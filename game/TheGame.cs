@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using static System.Math;
 using PaletteColor = ChipColor;
 
@@ -35,13 +36,20 @@ public partial class TheGame : Node2D
 
         #region 
         int tileLength = chipLayer.TileSet.TileSize.X;
-        Rect2 chipRect = shape2D.Shape.GetRect().Abs();
+        Dictionary<CollisionShape2D, Rect2> chipShape2Ds = new();
+        foreach(Node s in chipMouseHandler.GetChildren()) 
+            chipShape2Ds.Add((CollisionShape2D)s, ((CollisionShape2D)s).Shape.GetRect().Abs());
+        Func<Vector2, bool> chipHasPoint = (position) =>
+        {
+            foreach(var (s, r) in chipShape2Ds) if (r.HasPoint(s.ToLocal(position))) return true;
+            return false;
+        };
         Action<Vector2, Vector2, Action<Vector2>> drag = (position, relative, operation) =>
         {
             int t = (int)Max(Abs(relative.X), Abs(relative.Y)) / tileLength + 1;
             for (int i = 0; i <= t; i++)
             {
-                if (chipRect.HasPoint(shape2D.ToLocal(position))) operation(position);
+                if (chipHasPoint(position)) operation(position);
                 position += relative / t;
             }
         };
@@ -154,7 +162,7 @@ public partial class TheGame : Node2D
         #endregion
 
         #region 
-        Variant? v = JSONSaver.PleaseSaveAndTryLoad("framedChipBackgroundLayer.Visible",
+        Variant? v = JSONSaver.PleaseSaveAndTryLoad("IsGridEnabled",
                                                     () => framedChipBackgroundLayer.Visible);
         if (v.HasValue) framedChipBackgroundLayer.Visible = (bool)v;
         #endregion
