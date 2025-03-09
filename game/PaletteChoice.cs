@@ -1,0 +1,17 @@
+public enum PaletteChoice {
+	None,
+	Black,
+	White,
+	Red,
+	Blue,
+	Green,
+	Yellow,
+	Purple,
+	Orange,
+	Erase,
+	Clear,
+	GridOrStop,
+	Step,
+	PlayOrPause,
+	SpeedOrPause,
+}

@@ -1,31 +1,29 @@
 using Godot;
 
-public partial class Chip : Node2D
+public partial class ChipLayer : TileMapLayer
 {
     public void AssignUnit(Vector2 position, ChipColor color)
     {
-        if (color == ChipColor.None || color == ChipColor.Clear) return;
-        _layer.SetCell(_layer.LocalToMap(ToLocal(position)),
-                       _sourceID,
-                       Chip.AtlasCoordinateFrom(color));
+        if (color == ChipColor.None) return;
+        SetCell(LocalToMap(ToLocal(position)),
+                _sourceID,
+                ChipLayer.AtlasCoordinateFrom(color));
     }
     public void EraseUnit(Vector2 position)
-        => _layer.EraseCell(_layer.LocalToMap(ToLocal(position)));
+        => EraseCell(LocalToMap(ToLocal(position)));
     public ChipColor GetUnit(Vector2 position)
-        => Chip.ColorFrom(_layer.GetCellAtlasCoords(_layer.LocalToMap(ToLocal(position))));
+        => ChipLayer.ColorFrom(GetCellAtlasCoords(LocalToMap(ToLocal(position))));
     public void ClearUnit()
-        => _layer.Clear();
+        => Clear();
     
     
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
-    private TileMapLayer _layer;
-    private int _sourceID;
+    private static int _sourceID;
     public override void _Ready()
     {
         base._Ready();
-        _layer = GetNode<TileMapLayer>("ChipLayer");
-        _sourceID = _layer.TileSet.GetSourceId(0);
+        _sourceID = TileSet.GetSourceId(0);
     }
     private static Vector2I AtlasCoordinateFrom(ChipColor color)
     {
@@ -39,6 +37,7 @@ public partial class Chip : Node2D
             case ChipColor.Yellow:  return new Vector2I(5, 0);
             case ChipColor.Purple:  return new Vector2I(6, 0);
             case ChipColor.Orange:  return new Vector2I(7, 0);
+            case ChipColor.Erase:   return new Vector2I(-1, -1);
             default:                return new Vector2I(-1, -1);
         }
     }

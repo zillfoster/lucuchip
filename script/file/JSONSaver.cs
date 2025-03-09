@@ -4,11 +4,12 @@ using System.Collections.Generic;
 
 public partial class JSONSaver : Node
 {
-    public static Variant? PleaseSaveAndTryLoad(string saveKey, Func<Variant> saveMethod)
+    public static Variant? PleaseSaveAndTryLoad(string saveKey, 
+                                                Func<Variant> saveMethod)
     {
-        JSONSaver._willSaveData[saveKey] = saveMethod;
-        if (JSONSaver._loadedData.ContainsKey(saveKey)) 
-            return JSONSaver._loadedData[saveKey];
+        _willSaveData[saveKey] = saveMethod;
+        if (_loadedData.ContainsKey(saveKey)) 
+            return _loadedData[saveKey];
         else return null;
     }
 
@@ -20,6 +21,10 @@ public partial class JSONSaver : Node
     private const string SAVE_PATH = "user://save.json";
     private static readonly Dictionary<string, Variant> _loadedData = new();
     private static readonly Dictionary<string, Func<Variant>> _willSaveData = new();
+    private static void OnVersionChanged()
+    {
+        // write operation for transforming data from previous version
+    }
     public override void _Ready()
     {
         base._Ready();
@@ -37,7 +42,7 @@ public partial class JSONSaver : Node
             foreach(var (k, v) in loadedData) _loadedData.Add(k, v);
         }
         if (!_loadedData.ContainsKey("version")) _loadedData.Clear();
-        else if ((string)_loadedData["version"] != VERSION) _loadedData.Clear();
+        else if ((string)_loadedData["version"] != VERSION) OnVersionChanged();
         JSONSaver.PleaseSaveAndTryLoad("version", () => VERSION);
     }
     public override void _Notification(int what)

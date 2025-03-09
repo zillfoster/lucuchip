@@ -9,9 +9,4 @@ public enum ChipColor {
 	Purple,
 	Orange,
 	Erase,
-	Clear,
-	Grid,
-	Step,
-	Play,
-	Speed,
 }
