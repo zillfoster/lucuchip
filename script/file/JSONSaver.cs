@@ -16,6 +16,7 @@ public partial class JSONSaver : Node
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     private static JSONSaver Instance;
+    private const string VERSION = "demo 0.1";
     private const string SAVE_PATH = "user://save.json";
     private static readonly Dictionary<string, Variant> _loadedData = new();
     private static readonly Dictionary<string, Func<Variant>> _willSaveData = new();
@@ -35,6 +36,9 @@ public partial class JSONSaver : Node
                 new((Godot.Collections.Dictionary)json.Data);
             foreach(var (k, v) in loadedData) _loadedData.Add(k, v);
         }
+        if (!_loadedData.ContainsKey("version")) _loadedData.Clear();
+        else if ((string)_loadedData["version"] != VERSION) _loadedData.Clear();
+        JSONSaver.PleaseSaveAndTryLoad("version", () => VERSION);
     }
     public override void _Notification(int what)
     {
