@@ -3,3 +3,4 @@
 /android/
 .DS_Store
 asset/*.aseprite
+/.vscode
