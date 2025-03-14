@@ -2,21 +2,20 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class JSONSaver : Node
+public partial class GameSaver : Node
 {
-    public static Variant? PleaseSaveAndTryLoad(string saveKey, 
-                                                Func<Variant> saveMethod)
+    public static Variant? Load(string saveKey)
     {
-        _willSaveData[saveKey] = saveMethod;
         if (_loadedData.ContainsKey(saveKey)) 
             return _loadedData[saveKey];
         else return null;
     }
-
+    public static void Save(string saveKey, Func<Variant> saveMethod)
+        => _willSaveData[saveKey] = saveMethod;
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
-    private static JSONSaver Instance;
+    private static GameSaver This;
     private const string VERSION = "demo 0.1";
     private const string SAVE_PATH = "user://save.json";
     private static readonly Dictionary<string, Variant> _loadedData = new();
@@ -28,32 +27,35 @@ public partial class JSONSaver : Node
     public override void _Ready()
     {
         base._Ready();
-        if (Instance == null) Instance = this;
+
+        if (This == null) This = this;
         else QueueFree();
+
         if (FileAccess.FileExists(SAVE_PATH))
         {
             using FileAccess saveFile = FileAccess.Open(SAVE_PATH, FileAccess.ModeFlags.Read);
-            string jsonString = saveFile.GetLine();
+            
             Json json = new();
-            Error parseResult = json.Parse(jsonString);
+            Error parseResult = json.Parse(saveFile.GetLine());
             if (parseResult != Error.Ok) GD.Print("JSON Parse Error.");
             Godot.Collections.Dictionary<string, Variant> loadedData = 
-                new((Godot.Collections.Dictionary)json.Data);
+                new((Godot.Collections.Dictionary<string, Variant>)json.Data);
             foreach(var (k, v) in loadedData) _loadedData.Add(k, v);
         }
+
         if (!_loadedData.ContainsKey("version")) _loadedData.Clear();
         else if ((string)_loadedData["version"] != VERSION) OnVersionChanged();
-        JSONSaver.PleaseSaveAndTryLoad("version", () => VERSION);
+        GameSaver.Save("version", () => VERSION);
     }
     public override void _Notification(int what)
     {
         if (what == 1006) // Mainloop.NOTIFICATION_WM_CLOSE_REQUEST = 1006
         {
             Godot.Collections.Dictionary<string, Variant> savingData = new();
-            foreach(var (k, fv) in _willSaveData) savingData[k] = fv();
-            string jsonString = Json.Stringify(savingData);
+            foreach(var (key, method) in _willSaveData) savingData[key] = method();
+
             using FileAccess saveFile = FileAccess.Open(SAVE_PATH, FileAccess.ModeFlags.Write);
-            saveFile.StoreLine(jsonString);
+            saveFile.StoreLine(Json.Stringify(savingData));
         }
     }
 }

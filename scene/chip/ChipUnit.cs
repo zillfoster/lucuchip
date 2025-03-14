@@ -1,4 +1,4 @@
-public enum ChipColor {
+public enum ChipUnit {
 	None,
 	Black,
 	White,
@@ -8,5 +8,7 @@ public enum ChipColor {
 	Yellow,
 	Purple,
 	Orange,
+	Input,
+	Output,
 	Erase,
 }
