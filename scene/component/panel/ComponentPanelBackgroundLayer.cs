@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class ComponentBackgroundLayer : TileMapLayer
+public partial class ComponentPanelBackgroundLayer : TileMapLayer
 {
     public void SetBackground(Rect2I field, bool isGridded)
     {
@@ -9,7 +9,7 @@ public partial class ComponentBackgroundLayer : TileMapLayer
             for (int j = field.Position.Y; j < (field.Position + field.Size).Y; j++)
                 SetCell(new Vector2I(i, j), 
                         _sourceID, 
-                        ComponentBackgroundLayer.AtlasCoordsFrom(isGridded));
+                        ComponentPanelBackgroundLayer.AtlasCoordsFrom(isGridded));
     }
 
     // Below this comment, all the members are (somehow) private.

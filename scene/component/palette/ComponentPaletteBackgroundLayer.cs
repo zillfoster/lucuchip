@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class PaletteBackgroundLayer : TileMapLayer
+public partial class ComponentPaletteBackgroundLayer : TileMapLayer
 {
     public void SetBackground(Vector2I coords, bool isGridded)
     {

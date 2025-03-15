@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class PaletteCursorLayer : TileMapLayer
+public partial class ComponentPaletteCursorLayer : TileMapLayer
 {
     public Vector2I? Selection
     {

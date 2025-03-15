@@ -1,4 +1,4 @@
-public enum PaletteChoice {
+public enum ComponentPaletteChoice {
 	None,
 	Black,
 	White,
