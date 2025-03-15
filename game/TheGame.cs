@@ -3,7 +3,7 @@ using Godot;
 public partial class TheGame : Node2D
 {
     [Export]
-    private Chip _chip;
+    private Component _component;
     [Export]
     private Palette _palette;
     public override void _Ready()
@@ -12,10 +12,10 @@ public partial class TheGame : Node2D
 
         Input.UseAccumulatedInput = false;
 
-        GameSaver.Save("IsGridded", () => _chip.IsGridded);
+        GameSaver.Save("IsGridded", () => _component.IsGridded);
 
-        _palette.Chips.Add(_chip);
+        _palette.Components.Add(_component);
 
-        AddChild(new MouseInputHandler() {_chip, _palette});
+        AddChild(new MouseInputHandler() {_component, _palette});
     }
 }

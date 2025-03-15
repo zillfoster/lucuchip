@@ -1,4 +1,4 @@
-public enum ChipUnit {
+public enum ComponentUnit {
 	None,
 	Black,
 	White,

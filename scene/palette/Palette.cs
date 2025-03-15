@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public partial class Palette : Node2D, IMouseInputable
 {
-    public List<Chip> Chips { get; } = new();
+    public List<Component> Components { get; } = new();
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
@@ -52,18 +52,18 @@ public partial class Palette : Node2D, IMouseInputable
             case PaletteChoice.Erase:
                 if (_cursorLayer.Selection == coords) return;
                 _cursorLayer.Selection = coords;
-                foreach (Chip chip in Chips) chip.ChosenDrawStyle = UnitFrom(choice);
+                foreach (Component comp in Components) comp.ChosenDrawStyle = UnitFrom(choice);
                 return;
             case PaletteChoice.Clear:
-                foreach (Chip chip in Chips) chip.ClearUnit();
+                foreach (Component comp in Components) comp.ClearUnit();
                 return;
             case PaletteChoice.GridOn:
                 _mainLayer.AssignChoice(coords, PaletteChoice.GridOff);
-                foreach (Chip chip in Chips) chip.IsGridded = false;
+                foreach (Component comp in Components) comp.IsGridded = false;
                 return;
             case PaletteChoice.GridOff:
                 _mainLayer.AssignChoice(coords, PaletteChoice.GridOn);
-                foreach (Chip chip in Chips) chip.IsGridded = true;
+                foreach (Component comp in Components) comp.IsGridded = true;
                 return;
             case PaletteChoice.Step:
             case PaletteChoice.Play:
@@ -75,11 +75,11 @@ public partial class Palette : Node2D, IMouseInputable
         }
         else if (button == MouseButton.Right)
         {
-            foreach (Chip chip in Chips)
+            foreach (Component comp in Components)
             {
-                if (chip.ChosenDrawStyle == UnitFrom(choice))
+                if (comp.ChosenDrawStyle == UnitFrom(choice))
                 {
-                    chip.ChosenDrawStyle = ChipUnit.None;
+                    comp.ChosenDrawStyle = ComponentUnit.None;
                     _cursorLayer.Selection = null;
                     _cursorLayer.SetCursor(coords);
                 }
@@ -96,22 +96,22 @@ public partial class Palette : Node2D, IMouseInputable
         => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));
     private bool FieldContains(Vector2I coords)
         => _field.HasArea()? _field.HasPoint(coords): false;
-    private static ChipUnit UnitFrom(PaletteChoice choice)
+    private static ComponentUnit UnitFrom(PaletteChoice choice)
     {
         switch(choice)
         {
-            case PaletteChoice.Black:   return ChipUnit.Black;
-            case PaletteChoice.White:   return ChipUnit.White;
-            case PaletteChoice.Red:     return ChipUnit.Red;
-            case PaletteChoice.Blue:    return ChipUnit.Blue;
-            case PaletteChoice.Green:   return ChipUnit.Green;
-            case PaletteChoice.Yellow:  return ChipUnit.Yellow;
-            case PaletteChoice.Purple:  return ChipUnit.Purple;
-            case PaletteChoice.Orange:  return ChipUnit.Orange;
-            case PaletteChoice.Input:   return ChipUnit.Input;
-            case PaletteChoice.Output:  return ChipUnit.Output;
-            case PaletteChoice.Erase:   return ChipUnit.Erase;
-            default:                    return ChipUnit.None;  
+            case PaletteChoice.Black:   return ComponentUnit.Black;
+            case PaletteChoice.White:   return ComponentUnit.White;
+            case PaletteChoice.Red:     return ComponentUnit.Red;
+            case PaletteChoice.Blue:    return ComponentUnit.Blue;
+            case PaletteChoice.Green:   return ComponentUnit.Green;
+            case PaletteChoice.Yellow:  return ComponentUnit.Yellow;
+            case PaletteChoice.Purple:  return ComponentUnit.Purple;
+            case PaletteChoice.Orange:  return ComponentUnit.Orange;
+            case PaletteChoice.Input:   return ComponentUnit.Input;
+            case PaletteChoice.Output:  return ComponentUnit.Output;
+            case PaletteChoice.Erase:   return ComponentUnit.Erase;
+            default:                    return ComponentUnit.None;  
         }
     }
 }
