@@ -29,6 +29,6 @@ public partial class PaletteCursorLayer : TileMapLayer
         base._Ready();
         _sourceID = TileSet.GetSourceId(0);
     }
-    private static readonly Vector2I _cursorAtlasCoords = new(3, 3);
-    private static readonly Vector2I _selectionAtlasCoords = new(3, 2);
+    private static readonly Vector2I _cursorAtlasCoords = new(2, 4);
+    private static readonly Vector2I _selectionAtlasCoords = new(3, 4);
 }

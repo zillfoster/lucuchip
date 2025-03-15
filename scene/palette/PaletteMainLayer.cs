@@ -33,7 +33,7 @@ public partial class PaletteMainLayer : TileMapLayer
             case PaletteChoice.Input:       return new Vector2I(0, 2);
             case PaletteChoice.Output:      return new Vector2I(1, 2);
             case PaletteChoice.Erase:       return new Vector2I(2, 2);
-            case PaletteChoice.Clear:       return new Vector2I(7, 3);
+            case PaletteChoice.Clear:       return new Vector2I(3, 2);
             case PaletteChoice.GridOn:      return new Vector2I(4, 3);
             case PaletteChoice.GridOff:     return new Vector2I(5, 3);
             case PaletteChoice.Step:        return new Vector2I(4, 2);
@@ -59,7 +59,7 @@ public partial class PaletteMainLayer : TileMapLayer
             case Vector2I(0, 2):    return PaletteChoice.Input;
             case Vector2I(1, 2):    return PaletteChoice.Output;
             case Vector2I(2, 2):    return PaletteChoice.Erase;
-            case Vector2I(7, 3):    return PaletteChoice.Clear;
+            case Vector2I(3, 2):    return PaletteChoice.Clear;
             case Vector2I(4, 3):    return PaletteChoice.GridOn;
             case Vector2I(5, 3):    return PaletteChoice.GridOff;
             case Vector2I(4, 2):    return PaletteChoice.Step;
