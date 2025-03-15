@@ -4,26 +4,7 @@ using System.Collections.Generic;
 
 public partial class ComponentPanel : Node2D, IMouseInputable
 {
-    public Rect2I Field
-    {
-        get => _field;
-        set
-        {
-            _field = value;
-            _backgroundLayer.SetBackground(_field, _isGridded);
-            foreach (Vector2I coords in _mainLayer.GetUsedCells())
-                if (!Field.HasPoint(coords)) _mainLayer.EraseCell(coords);
-        }
-    }
-    public bool IsGridded
-    {
-        get => _isGridded;
-        set 
-        {
-            _isGridded = value;
-            _backgroundLayer.SetBackground(_field, _isGridded);
-        }
-    }
+    public ComponentProcessor Processor { get; set; }
     public bool IsEditable { get; set; } = true;
     public ComponentPanelUnit ChosenDrawStyle { get; set; } = ComponentPanelUnit.None;
     public void DrawUnit(Vector2 position)
@@ -45,6 +26,26 @@ public partial class ComponentPanel : Node2D, IMouseInputable
         foreach (Vector2I coords in _mainLayer.GetUsedCells())
             units.Add(coords, _mainLayer.GetUnit(coords));
         return units;
+    }
+    public Rect2I Field
+    {
+        get => _field;
+        set
+        {
+            _field = value;
+            _backgroundLayer.SetBackground(_field, _isGridded);
+            foreach (Vector2I coords in _mainLayer.GetUsedCells())
+                if (!Field.HasPoint(coords)) _mainLayer.EraseCell(coords);
+        }
+    }
+    public bool IsGridded
+    {
+        get => _isGridded;
+        set 
+        {
+            _isGridded = value;
+            _backgroundLayer.SetBackground(_field, _isGridded);
+        }
     }
 
     // Below this comment, all the members are (somehow) private.
