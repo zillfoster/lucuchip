@@ -2,12 +2,12 @@ using Godot;
 
 public partial class ComponentPanelCursorLayer : TileMapLayer
 {
-    public void SetCursor(Vector2I coords, ComponentPanelUnit style, ComponentPanelUnit hovered)
+    public void SetCursor(Vector2I coords, ComponentPanelTile chosen, ComponentPanelTile hovering)
     {
         Clear();
-        if (style == ComponentPanelUnit.None || style == hovered) return;
-        Vector2I atlasCoords = ComponentPanelCursorLayer.AtlasCoordsFrom(style);
-        if (style == ComponentPanelUnit.Erase && hovered == ComponentPanelUnit.Red) atlasCoords = _altEraseAtlasCoords;
+        if (chosen == ComponentPanelTile.None || chosen == hovering) return;
+        Vector2I atlasCoords = ComponentPanelCursorLayer.AtlasCoordsFrom(chosen);
+        if (chosen == ComponentPanelTile.Erase && hovering == ComponentPanelTile.Red) atlasCoords = _altEraseAtlasCoords;
         SetCell(coords, _sourceID, atlasCoords);
     }
 
@@ -19,21 +19,21 @@ public partial class ComponentPanelCursorLayer : TileMapLayer
         base._Ready();
         _sourceID = TileSet.GetSourceId(0);
     }
-    private static Vector2I AtlasCoordsFrom(ComponentPanelUnit unit)
+    private static Vector2I AtlasCoordsFrom(ComponentPanelTile tile)
     {
-        switch(unit)
+        switch(tile)
         {
-            case ComponentPanelUnit.Black:    return new Vector2I(0, 1);
-            case ComponentPanelUnit.White:    return new Vector2I(1, 1);
-            case ComponentPanelUnit.Red:      return new Vector2I(2, 1);
-            case ComponentPanelUnit.Blue:     return new Vector2I(3, 1);
-            case ComponentPanelUnit.Green:    return new Vector2I(4, 1);
-            case ComponentPanelUnit.Yellow:   return new Vector2I(5, 1);
-            case ComponentPanelUnit.Purple:   return new Vector2I(6, 1);
-            case ComponentPanelUnit.Orange:   return new Vector2I(7, 1);
-            case ComponentPanelUnit.Input:    return new Vector2I(0, 3);
-            case ComponentPanelUnit.Output:   return new Vector2I(1, 3);
-            case ComponentPanelUnit.Erase:    return new Vector2I(2, 2);
+            case ComponentPanelTile.Black:    return new Vector2I(0, 1);
+            case ComponentPanelTile.White:    return new Vector2I(1, 1);
+            case ComponentPanelTile.Red:      return new Vector2I(2, 1);
+            case ComponentPanelTile.Blue:     return new Vector2I(3, 1);
+            case ComponentPanelTile.Green:    return new Vector2I(4, 1);
+            case ComponentPanelTile.Yellow:   return new Vector2I(5, 1);
+            case ComponentPanelTile.Purple:   return new Vector2I(6, 1);
+            case ComponentPanelTile.Orange:   return new Vector2I(7, 1);
+            case ComponentPanelTile.Input:    return new Vector2I(0, 3);
+            case ComponentPanelTile.Output:   return new Vector2I(1, 3);
+            case ComponentPanelTile.Erase:    return new Vector2I(2, 2);
             default:                return new Vector2I(-1, -1);
         }
     }

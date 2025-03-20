@@ -1,4 +1,4 @@
-public enum ComponentPanelUnit {
+public enum ComponentPanelTile {
 	None,
 	Black,
 	White,

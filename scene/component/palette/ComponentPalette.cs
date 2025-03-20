@@ -52,10 +52,10 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             case ComponentPaletteChoice.Erase:
                 if (_cursorLayer.Selection == coords) return;
                 _cursorLayer.Selection = coords;
-                foreach (ComponentPanel panel in Panels) panel.ChosenDrawStyle = UnitFrom(choice);
+                foreach (ComponentPanel panel in Panels) panel.Brush = UnitFrom(choice);
                 return;
             case ComponentPaletteChoice.Clear:
-                foreach (ComponentPanel panel in Panels) panel.ClearUnit();
+                foreach (ComponentPanel panel in Panels) panel.ClearTile();
                 return;
             case ComponentPaletteChoice.GridOn:
                 _mainLayer.AssignChoice(coords, ComponentPaletteChoice.GridOff);
@@ -77,9 +77,9 @@ public partial class ComponentPalette : Node2D, IMouseInputable
         {
             foreach (ComponentPanel panel in Panels)
             {
-                if (panel.ChosenDrawStyle == UnitFrom(choice))
+                if (panel.Brush == UnitFrom(choice))
                 {
-                    panel.ChosenDrawStyle = ComponentPanelUnit.None;
+                    panel.Brush = ComponentPanelTile.None;
                     _cursorLayer.Selection = null;
                     _cursorLayer.SetCursor(coords);
                 }
@@ -96,22 +96,22 @@ public partial class ComponentPalette : Node2D, IMouseInputable
         => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));
     private bool FieldContains(Vector2I coords)
         => _field.HasArea()? _field.HasPoint(coords): false;
-    private static ComponentPanelUnit UnitFrom(ComponentPaletteChoice choice)
+    private static ComponentPanelTile UnitFrom(ComponentPaletteChoice choice)
     {
         switch(choice)
         {
-            case ComponentPaletteChoice.Black:   return ComponentPanelUnit.Black;
-            case ComponentPaletteChoice.White:   return ComponentPanelUnit.White;
-            case ComponentPaletteChoice.Red:     return ComponentPanelUnit.Red;
-            case ComponentPaletteChoice.Blue:    return ComponentPanelUnit.Blue;
-            case ComponentPaletteChoice.Green:   return ComponentPanelUnit.Green;
-            case ComponentPaletteChoice.Yellow:  return ComponentPanelUnit.Yellow;
-            case ComponentPaletteChoice.Purple:  return ComponentPanelUnit.Purple;
-            case ComponentPaletteChoice.Orange:  return ComponentPanelUnit.Orange;
-            case ComponentPaletteChoice.Input:   return ComponentPanelUnit.Input;
-            case ComponentPaletteChoice.Output:  return ComponentPanelUnit.Output;
-            case ComponentPaletteChoice.Erase:   return ComponentPanelUnit.Erase;
-            default:                    return ComponentPanelUnit.None;  
+            case ComponentPaletteChoice.Black:   return ComponentPanelTile.Black;
+            case ComponentPaletteChoice.White:   return ComponentPanelTile.White;
+            case ComponentPaletteChoice.Red:     return ComponentPanelTile.Red;
+            case ComponentPaletteChoice.Blue:    return ComponentPanelTile.Blue;
+            case ComponentPaletteChoice.Green:   return ComponentPanelTile.Green;
+            case ComponentPaletteChoice.Yellow:  return ComponentPanelTile.Yellow;
+            case ComponentPaletteChoice.Purple:  return ComponentPanelTile.Purple;
+            case ComponentPaletteChoice.Orange:  return ComponentPanelTile.Orange;
+            case ComponentPaletteChoice.Input:   return ComponentPanelTile.Input;
+            case ComponentPaletteChoice.Output:  return ComponentPanelTile.Output;
+            case ComponentPaletteChoice.Erase:   return ComponentPanelTile.Erase;
+            default:                    return ComponentPanelTile.None;  
         }
     }
 }

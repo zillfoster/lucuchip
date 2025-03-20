@@ -2,13 +2,13 @@ using Godot;
 
 public partial class ComponentPanelMainLayer : TileMapLayer
 {
-    public void AssignUnit(Vector2I coords, ComponentPanelUnit style)
+    public void AssignTile(Vector2I coords, ComponentPanelTile tile)
     {
-        if (style == ComponentPanelUnit.None) return;
-        SetCell(coords, _sourceID, ComponentPanelMainLayer.AtlasCoordsFrom(style));
+        if (tile == ComponentPanelTile.None) return;
+        SetCell(coords, _sourceID, ComponentPanelMainLayer.AtlasCoordsFrom(tile));
     }
-    public ComponentPanelUnit GetUnit(Vector2I coords)
-        => ComponentPanelMainLayer.UnitFrom(GetCellAtlasCoords(coords));
+    public ComponentPanelTile GetTile(Vector2I coords)
+        => ComponentPanelMainLayer.TileFrom(GetCellAtlasCoords(coords));
     
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
@@ -18,38 +18,38 @@ public partial class ComponentPanelMainLayer : TileMapLayer
         base._Ready();
         _sourceID = TileSet.GetSourceId(0);
     }
-    private static Vector2I AtlasCoordsFrom(ComponentPanelUnit style)
+    private static Vector2I AtlasCoordsFrom(ComponentPanelTile tile)
     {
-        switch(style)
+        switch(tile)
         {
-            case ComponentPanelUnit.Black:    return new Vector2I(0, 0);
-            case ComponentPanelUnit.White:    return new Vector2I(1, 0);
-            case ComponentPanelUnit.Red:      return new Vector2I(2, 0);
-            case ComponentPanelUnit.Blue:     return new Vector2I(3, 0);
-            case ComponentPanelUnit.Green:    return new Vector2I(4, 0);
-            case ComponentPanelUnit.Yellow:   return new Vector2I(5, 0);
-            case ComponentPanelUnit.Purple:   return new Vector2I(6, 0);
-            case ComponentPanelUnit.Orange:   return new Vector2I(7, 0);
-            case ComponentPanelUnit.Input:    return new Vector2I(0, 2);
-            case ComponentPanelUnit.Output:   return new Vector2I(1, 2);
+            case ComponentPanelTile.Black:    return new Vector2I(0, 0);
+            case ComponentPanelTile.White:    return new Vector2I(1, 0);
+            case ComponentPanelTile.Red:      return new Vector2I(2, 0);
+            case ComponentPanelTile.Blue:     return new Vector2I(3, 0);
+            case ComponentPanelTile.Green:    return new Vector2I(4, 0);
+            case ComponentPanelTile.Yellow:   return new Vector2I(5, 0);
+            case ComponentPanelTile.Purple:   return new Vector2I(6, 0);
+            case ComponentPanelTile.Orange:   return new Vector2I(7, 0);
+            case ComponentPanelTile.Input:    return new Vector2I(0, 2);
+            case ComponentPanelTile.Output:   return new Vector2I(1, 2);
             default:                return new Vector2I(-1, -1);
         }
     }
-    private static ComponentPanelUnit UnitFrom(Vector2I atlasCoords)
+    private static ComponentPanelTile TileFrom(Vector2I atlasCoords)
     {
         switch(atlasCoords)
         {
-            case Vector2I(0, 0):   return ComponentPanelUnit.Black;
-            case Vector2I(1, 0):   return ComponentPanelUnit.White;
-            case Vector2I(2, 0):   return ComponentPanelUnit.Red;
-            case Vector2I(3, 0):   return ComponentPanelUnit.Blue;
-            case Vector2I(4, 0):   return ComponentPanelUnit.Green;
-            case Vector2I(5, 0):   return ComponentPanelUnit.Yellow;
-            case Vector2I(6, 0):   return ComponentPanelUnit.Purple;
-            case Vector2I(7, 0):   return ComponentPanelUnit.Orange;
-            case Vector2I(0, 2):   return ComponentPanelUnit.Input;
-            case Vector2I(1, 2):   return ComponentPanelUnit.Output;
-            default:               return ComponentPanelUnit.None;
+            case Vector2I(0, 0):   return ComponentPanelTile.Black;
+            case Vector2I(1, 0):   return ComponentPanelTile.White;
+            case Vector2I(2, 0):   return ComponentPanelTile.Red;
+            case Vector2I(3, 0):   return ComponentPanelTile.Blue;
+            case Vector2I(4, 0):   return ComponentPanelTile.Green;
+            case Vector2I(5, 0):   return ComponentPanelTile.Yellow;
+            case Vector2I(6, 0):   return ComponentPanelTile.Purple;
+            case Vector2I(7, 0):   return ComponentPanelTile.Orange;
+            case Vector2I(0, 2):   return ComponentPanelTile.Input;
+            case Vector2I(1, 2):   return ComponentPanelTile.Output;
+            default:               return ComponentPanelTile.None;
         }
     }
 }

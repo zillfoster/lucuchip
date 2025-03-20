@@ -6,26 +6,26 @@ public partial class ComponentPanel : Node2D, IMouseInputable
 {
     public ComponentProcessor Processor { get; set; }
     public bool IsEditable { get; set; } = true;
-    public ComponentPanelUnit ChosenDrawStyle { get; set; } = ComponentPanelUnit.None;
-    public void DrawUnit(Vector2 position)
+    public ComponentPanelTile Brush { get; set; } = ComponentPanelTile.None;
+    public void DrawTile(Vector2 position)
     {
         if (IsEditable && FieldContains(position))
-            _mainLayer.AssignUnit(CoordsFrom(position), ChosenDrawStyle);
+            _mainLayer.AssignTile(CoordsFrom(position), Brush);
     }
-    public void EraseUnit(Vector2 position)
+    public void EraseTile(Vector2 position)
     {
         if (IsEditable && FieldContains(position))
-            _mainLayer.AssignUnit(CoordsFrom(position), ComponentPanelUnit.Erase);
+            _mainLayer.AssignTile(CoordsFrom(position), ComponentPanelTile.Erase);
     }
-    public void ClearUnit() { if (IsEditable) _mainLayer.Clear(); }
-    public ComponentPanelUnit GetUnit(Vector2 position)
-        => _mainLayer.GetUnit(CoordsFrom(position));
-    public Dictionary<Vector2I, ComponentPanelUnit> GetUnits()
+    public void ClearTile() { if (IsEditable) _mainLayer.Clear(); }
+    public ComponentPanelTile GetTile(Vector2 position)
+        => _mainLayer.GetTile(CoordsFrom(position));
+    public Dictionary<Vector2I, ComponentPanelTile> GetTiles()
     {
-        Dictionary<Vector2I, ComponentPanelUnit> units = new();
+        Dictionary<Vector2I, ComponentPanelTile> tiles = new();
         foreach (Vector2I coords in _mainLayer.GetUsedCells())
-            units.Add(coords, _mainLayer.GetUnit(coords));
-        return units;
+            tiles.Add(coords, _mainLayer.GetTile(coords));
+        return tiles;
     }
     public Rect2I Field
     {
@@ -74,41 +74,41 @@ public partial class ComponentPanel : Node2D, IMouseInputable
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)
     {
         Vector2I coords = CoordsFrom(position);
-        ComponentPanelUnit style = isPressed? GetCurrentStyle(button): ChosenDrawStyle;
+        ComponentPanelTile tile = isPressed? GetCurrentBrush(button): Brush;
         if (FieldContains(coords))
         {
-            if (isPressed && IsEditable) _mainLayer.AssignUnit(coords, style);
-            _cursorLayer.SetCursor(coords, style, _mainLayer.GetUnit(coords));
+            if (isPressed && IsEditable) _mainLayer.AssignTile(coords, tile);
+            _cursorLayer.SetCursor(coords, tile, _mainLayer.GetTile(coords));
         }
     }
     void IMouseInputable.OnMouseMotion(Vector2 position, Vector2 relative, MouseButtonMask mask, MouseButton lastButton, Vector2? lastPosition)
     {
         Vector2I coords = CoordsFrom(position);
-        ComponentPanelUnit style = GetCurrentStyle(lastButton);
+        ComponentPanelTile brush = GetCurrentBrush(lastButton);
         if (FieldContains(coords))
         {
             if (IsEditable &&
                 lastButton != MouseButton.None &&
                 lastPosition.HasValue &&
-                FieldContains(lastPosition.Value)) DrawThrough(position, relative, style); 
-            _cursorLayer.SetCursor(coords, style, _mainLayer.GetUnit(coords));
+                FieldContains(lastPosition.Value)) DrawThrough(position, relative, brush); 
+            _cursorLayer.SetCursor(coords, brush, _mainLayer.GetTile(coords));
         }
         else _cursorLayer.Clear();
     }
     private Vector2I CoordsFrom(Vector2 position)
         => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));
-    private ComponentPanelUnit GetCurrentStyle(MouseButton button)
-        => button == MouseButton.Right? ComponentPanelUnit.Erase: ChosenDrawStyle;
+    private ComponentPanelTile GetCurrentBrush(MouseButton button)
+        => button == MouseButton.Right? ComponentPanelTile.Erase: Brush;
     private bool FieldContains(Vector2I coords)
         => _field.HasArea()? _field.HasPoint(coords): false;
     private bool FieldContains(Vector2 position)
         => FieldContains(CoordsFrom(position));
-    private void DrawThrough(Vector2 position, Vector2 relative, ComponentPanelUnit style)
+    private void DrawThrough(Vector2 position, Vector2 relative, ComponentPanelTile brush)
     {
         int t = (int)Max(Abs(relative.X), Abs(relative.Y)) / _tileLength + 1;
         for (int i = 0; i <= t; i++)
         {
-            if (FieldContains(position)) _mainLayer.AssignUnit(CoordsFrom(position), style);
+            if (FieldContains(position)) _mainLayer.AssignTile(CoordsFrom(position), brush);
             position += relative / t;
         }
     }
