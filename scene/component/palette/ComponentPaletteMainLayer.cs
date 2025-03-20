@@ -40,7 +40,7 @@ public partial class ComponentPaletteMainLayer : TileMapLayer
             case ComponentPaletteChoice.Play:        return new Vector2I(5, 2);
             case ComponentPaletteChoice.Speed:       return new Vector2I(6, 2);
             case ComponentPaletteChoice.Pause:       return new Vector2I(7, 2);
-            case ComponentPaletteChoice.Stop:        return new Vector2I(6, 3);
+            case ComponentPaletteChoice.Halt:        return new Vector2I(6, 3);
             default:                        return new Vector2I(-1, -1);
         }
     }
@@ -66,7 +66,7 @@ public partial class ComponentPaletteMainLayer : TileMapLayer
             case Vector2I(5, 2):    return ComponentPaletteChoice.Play;
             case Vector2I(6, 2):    return ComponentPaletteChoice.Speed;
             case Vector2I(7, 2):    return ComponentPaletteChoice.Pause;
-            case Vector2I(6, 3):    return ComponentPaletteChoice.Stop;
+            case Vector2I(6, 3):    return ComponentPaletteChoice.Halt;
             default:                return ComponentPaletteChoice.None;
         }
     }

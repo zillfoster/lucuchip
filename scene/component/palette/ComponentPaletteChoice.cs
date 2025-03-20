@@ -18,5 +18,5 @@ public enum ComponentPaletteChoice {
 	Play,
 	Speed,
 	Pause,
-	Stop,
+	Halt,
 }

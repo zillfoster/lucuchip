@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using static DirectionsExtensions;
 
-public abstract class ComponentUnitProcessor: IComponentProcessable
+public abstract class ComponentUnitProcessor: IComponentProcessable, IComponentInputable
 {
     protected abstract Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received);
     
@@ -20,9 +20,9 @@ public abstract class ComponentUnitProcessor: IComponentProcessable
     private readonly bool _isInputable = true;
     private readonly ComponentUnitMemory _currentMemory = new();
     private readonly ComponentUnitMemory _nextMemory = new();
-    private Dictionary<Direction, IComponentProcessable> _neighbors = new();
-    public void SetNeighbor(Direction dir, IComponentProcessable proc)
-        => _neighbors[dir] = proc;
+    private Dictionary<Direction, IComponentInputable> _neighbors = new();
+    public void SetNeighbor(Direction dir, IComponentInputable neighbor)
+        => _neighbors[dir] = neighbor;
     public void Receive(Direction from, List<MonoPicture> picts)
     {
         if (!_isInputable) return;
@@ -30,12 +30,12 @@ public abstract class ComponentUnitProcessor: IComponentProcessable
         _nextMemory.InputAccum |= from.ToDirections();
         foreach (MonoPicture pict in picts) _nextMemory.Receive(from, pict);
     }
-    public void Initialize()
+    public void StepInitialize()
     {
         _currentMemory.CopyFrom(_nextMemory);
         _nextMemory.Initialize();
     }
-    public void Step()
+    public void StepProcess()
     {
         Dictionary<Directions, List<MonoPicture>> sending = Send(GetReadyForSend(_currentMemory.ReceivedPictures));
         foreach (var (dirs, picts) in sending)

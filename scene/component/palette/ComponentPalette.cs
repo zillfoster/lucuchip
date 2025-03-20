@@ -69,7 +69,7 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             case ComponentPaletteChoice.Play:
             case ComponentPaletteChoice.Speed:
             case ComponentPaletteChoice.Pause:
-            case ComponentPaletteChoice.Stop:
+            case ComponentPaletteChoice.Halt:
             default:
                 return;
         }

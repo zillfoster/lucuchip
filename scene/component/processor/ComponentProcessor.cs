@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class ComponentProcessor
 {
     public int RoundCount => _roundCount;
-    public void Start(List<MonoPicture> componentInput)
+    public void Start(List<MonoPicture> inputPicts)
     {
         _roundCount = 0;
         // incomplete...
@@ -18,4 +18,5 @@ public class ComponentProcessor
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     private int _roundCount = 0;
+    private Dictionary<Vector2I, IComponentProcessable> _processables = new();
 }
