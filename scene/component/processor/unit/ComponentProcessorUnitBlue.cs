@@ -1,14 +1,17 @@
+using System;
 using System.Collections.Generic;
 
-public class ComponentUnitProcessorGreen : ComponentUnitProcessor
+public class ComponentProcessorUnitBlue : ComponentProcessorUnit
 {
-    public ComponentUnitProcessorGreen() : base(false, false) {}
+    public ComponentProcessorUnitBlue() : base(true, false) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
         List<MonoPicture> sending = new();
         foreach (var (dir, picts) in received)
             foreach (MonoPicture pict in picts)
                 if (!sending.Contains(pict)) sending.Add(pict);
-        return new() {{Directions.All, sending}};
+        if (sending.Count == 0) return new();
+        MonoPicture sendingPict = sending[new Random().Next(sending.Count)];
+        return new() {{Directions.All, new() {sendingPict}}};
     }
 }

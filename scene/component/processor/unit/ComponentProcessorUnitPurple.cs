@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using static MonoPicture;
 
-public class ComponentUnitProcessorPurple : ComponentUnitProcessor
+public class ComponentProcessorUnitPurple : ComponentProcessorUnit
 {
-    public ComponentUnitProcessorPurple() : base(true, true) {}
+    public ComponentProcessorUnitPurple() : base(true, true) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
         Directions dirs = Directions.None;

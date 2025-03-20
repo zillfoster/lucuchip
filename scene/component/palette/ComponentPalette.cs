@@ -66,6 +66,19 @@ public partial class ComponentPalette : Node2D, IMouseInputable
                 foreach (ComponentPanel panel in Panels) panel.IsGridded = true;
                 return;
             case ComponentPaletteChoice.Step:
+                foreach (ComponentPanel panel in Panels)
+                {
+                    if (panel.Processor == null)
+                    {
+                        panel.Processor = new(panel);
+                        panel.Processor.Start(new()
+                        {
+                            {Direction.Right, new() { new(1, 1, MonoPicture.MonoColor.Black) }}
+                        });
+                    }
+                    else panel.Processor.Step();
+                }
+                return;
             case ComponentPaletteChoice.Play:
             case ComponentPaletteChoice.Speed:
             case ComponentPaletteChoice.Pause:

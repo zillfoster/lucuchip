@@ -24,9 +24,8 @@ public struct MonoPicture
     public MonoPicture(MonoColor[,] data) : 
     this(data.GetLength(0), data.GetLength(1), data) {}
     public MonoPicture(int height, int width, MonoColor color) : 
-    this(height, width, null)
+    this(height, width, new MonoColor[height, width])
     {
-        Data = new MonoColor[height, width];
         for (int i = 0; i < height; i++)
             for (int j = 0; j < width; j++)
                 Data[i, j] = color;
@@ -63,5 +62,11 @@ public struct MonoPicture
         code.Add(Width);
         foreach (MonoColor color in Data) code.Add(color);
         return code.ToHashCode();
+    }
+    public override string ToString()
+    {
+        string s = base.ToString() + ": ";
+        foreach (MonoColor color in Data) s += color.ToString();
+        return s;
     }
 }

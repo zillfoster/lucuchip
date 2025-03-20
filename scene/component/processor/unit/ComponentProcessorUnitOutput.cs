@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-public class ComponentUnitProcessorOutput : ComponentUnitProcessor
+public class ComponentProcessorUnitOutput : ComponentProcessorUnit
 {
-    public event EventHandler<OutputReceivedEventArgs> OutputReceived;
-    public ComponentUnitProcessorOutput() : base(false, false) {}
+    public event EventHandler<PicturesReceivedEventArgs> OutputReceived;
+    public ComponentProcessorUnitOutput() : base(false, false) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
         foreach (var (dir, picts) in received)
@@ -12,7 +12,7 @@ public class ComponentUnitProcessorOutput : ComponentUnitProcessor
             List<MonoPicture> sending = new();
             foreach (MonoPicture pict in picts)
                 if (!sending.Contains(pict)) sending.Add(pict);
-            if (sending.Count != 0) 
+            if (sending.Count != 0)
                 OutputReceived?.Invoke(this, new(dir.ToOppositeDirection(), sending));
         }
         return new() {{Directions.None, new()}};

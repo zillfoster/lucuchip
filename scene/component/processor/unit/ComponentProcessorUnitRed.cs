@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-public class ComponentUnitProcessorRed : ComponentUnitProcessor
+public class ComponentProcessorUnitRed : ComponentProcessorUnit
 {
-    public ComponentUnitProcessorRed() : base(true, false) {}
+    public ComponentProcessorUnitRed() : base(true, false) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
         List<MonoPicture> sending = new();

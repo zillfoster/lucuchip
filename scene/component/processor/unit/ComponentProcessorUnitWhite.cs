@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 
-public class ComponentUnitProcessorBlack : ComponentUnitProcessor
+public class ComponentProcessorUnitWhite : ComponentProcessorUnit
 {
-    public ComponentUnitProcessorBlack() : base(true, false) {}
+    public ComponentProcessorUnitWhite() : base(true, false) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
         List<MonoPicture> sending = new();
         foreach (var (dir, picts) in received)
             foreach (MonoPicture pict in picts)
             {
-                MonoPicture blackpict = new(pict, MonoPicture.MonoColor.Black);
-                if (!sending.Contains(blackpict)) sending.Add(blackpict);
+                MonoPicture whitepict = new(pict, MonoPicture.MonoColor.White);
+                if (!sending.Contains(whitepict)) sending.Add(whitepict);
             }
         return new() {{Directions.All, sending}};
     }

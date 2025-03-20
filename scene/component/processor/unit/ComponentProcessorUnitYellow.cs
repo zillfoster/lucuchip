@@ -1,9 +1,9 @@
 using static MonoPicture;
 using System.Collections.Generic;
 
-public class ComponentUnitProcessorYellow : ComponentUnitProcessor
+public class ComponentProcessorUnitYellow : ComponentProcessorUnit
 {
-    public ComponentUnitProcessorYellow() : base(false, false, false) {}
+    public ComponentProcessorUnitYellow() : base(false, false, false) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
         MonoColor randomColor = (MonoColor)(new System.Random().Next(2));

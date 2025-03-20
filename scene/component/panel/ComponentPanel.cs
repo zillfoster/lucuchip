@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public partial class ComponentPanel : Node2D, IMouseInputable
 {
-    public ComponentProcessor Processor { get; set; }
+    public ComponentProcessor Processor { get; set; } = null;
     public bool IsEditable { get; set; } = true;
     public ComponentPanelTile Brush { get; set; } = ComponentPanelTile.None;
     public void DrawTile(Vector2 position)
@@ -69,6 +69,21 @@ public partial class ComponentPanel : Node2D, IMouseInputable
 
         Variant? v = GameSaver.Load("IsGridded");
         if (v.HasValue) IsGridded = (bool)v;
+
+        v = GameSaver.Load("PanelTiles");
+        if (v.HasValue) 
+        {
+            foreach (var (index, data) in
+                    (Godot.Collections.Dictionary<int, 
+                     Godot.Collections.Dictionary<string, int>>)v)
+            {
+                if (data.ContainsKey("coords.X") &&
+                    data.ContainsKey("coords.Y") &&
+                    data.ContainsKey("tile"))
+                    _mainLayer.AssignTile(new(data["coords.X"], data["coords.Y"]), 
+                                         (ComponentPanelTile)data["tile"]);
+            }
+        }
     }
     
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)

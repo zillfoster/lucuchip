@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-public class OutputReceivedEventArgs : EventArgs
+public class PicturesReceivedEventArgs : EventArgs
 {
-    public Direction Toward { get; }
+    public Direction Toward => _toward;
     public IReadOnlyList<MonoPicture> Pictures => _pictures;
-    public OutputReceivedEventArgs(Direction toward, List<MonoPicture> picts)
+    public PicturesReceivedEventArgs(Direction toward, List<MonoPicture> picts)
     {
         _toward = toward;
         _pictures = new(picts);
