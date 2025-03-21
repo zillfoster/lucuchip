@@ -5,12 +5,11 @@ public partial class ComponentPalette : Node2D, IMouseInputable
     public ComponentPanel Panel { get; set; } = new();
     public bool IsGridded
     {
-        get => Panel.IsGridded;
+        get => _mainLayer.GetChoice(_gridCoords) == ComponentPaletteChoice.GridOn;
         set
         {
             if (value) _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOn);
             else _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOff);
-            Panel.IsGridded = value;
         }
     }
 
@@ -56,11 +55,11 @@ public partial class ComponentPalette : Node2D, IMouseInputable
                 Panel.ClearTile();
                 return;
             case ComponentPaletteChoice.GridOn:
-                _mainLayer.AssignChoice(coords, ComponentPaletteChoice.GridOff);
+                this.IsGridded = false;
                 Panel.IsGridded = false;
                 return;
             case ComponentPaletteChoice.GridOff:
-                _mainLayer.AssignChoice(coords, ComponentPaletteChoice.GridOn);
+                this.IsGridded = true;
                 Panel.IsGridded = true;
                 return;
             case ComponentPaletteChoice.Step:
@@ -116,7 +115,7 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             case ComponentPaletteChoice.Input:   return ComponentPanelTile.Input;
             case ComponentPaletteChoice.Output:  return ComponentPanelTile.Output;
             case ComponentPaletteChoice.Erase:   return ComponentPanelTile.Erase;
-            default:                    return ComponentPanelTile.None;  
+            default:                             return ComponentPanelTile.None;
         }
     }
 }
