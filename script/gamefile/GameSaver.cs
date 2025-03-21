@@ -6,12 +6,20 @@ public partial class GameSaver : Node
 {
     public static Variant? Load(string saveKey)
     {
-        if (_loadedData.ContainsKey(saveKey)) 
+        if (_loadedData.ContainsKey(saveKey))
             return _loadedData[saveKey];
         else return null;
     }
     public static void Save(string saveKey, Func<Variant> saveMethod)
         => _willSaveData[saveKey] = saveMethod;
+    public static void Load(ISavable savable)
+    {
+        Variant? v = Load(savable.GetIdentity());
+        if (v.HasValue) savable.Load(new Dictionary<string, Variant>((Godot.Collections.Dictionary<string, Variant>)v));
+    }
+    public static void Save(ISavable savable)
+        => Save(savable.GetIdentity(), () => new Godot.Collections.Dictionary<string, Variant>(savable.Save()));
+    public static void LoadAndSave(ISavable savable) { Load(savable); Save(savable); }
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.

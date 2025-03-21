@@ -12,6 +12,11 @@ public partial class ComponentPanel : Node2D, IMouseInputable
         if (IsEditable && FieldContains(position))
             _mainLayer.AssignTile(CoordsFrom(position), Brush);
     }
+    public void DrawTile(Vector2I coords, ComponentPanelTile tile)
+    {
+        if (IsEditable && FieldContains(coords))
+            _mainLayer.AssignTile(coords, tile);
+    }
     public void EraseTile(Vector2 position)
     {
         if (IsEditable && FieldContains(position))
@@ -64,26 +69,7 @@ public partial class ComponentPanel : Node2D, IMouseInputable
     public override void _Ready()
     {
         base._Ready();
-
         _tileLength = _mainLayer.TileSet.TileSize.X;
-
-        Variant? v = GameSaver.Load("IsGridded");
-        if (v.HasValue) IsGridded = (bool)v;
-
-        v = GameSaver.Load("PanelTiles");
-        if (v.HasValue) 
-        {
-            foreach (var (index, data) in
-                    (Godot.Collections.Dictionary<int, 
-                     Godot.Collections.Dictionary<string, int>>)v)
-            {
-                if (data.ContainsKey("coords.X") &&
-                    data.ContainsKey("coords.Y") &&
-                    data.ContainsKey("tile"))
-                    _mainLayer.AssignTile(new(data["coords.X"], data["coords.Y"]), 
-                                         (ComponentPanelTile)data["tile"]);
-            }
-        }
     }
     
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)

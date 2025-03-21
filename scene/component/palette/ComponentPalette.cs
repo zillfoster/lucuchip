@@ -1,31 +1,29 @@
 using Godot;
-using System.Collections.Generic;
 
 public partial class ComponentPalette : Node2D, IMouseInputable
 {
-    public List<ComponentPanel> Panels { get; } = new();
+    public ComponentPanel Panel { get; set; } = new();
+    public bool IsGridded
+    {
+        get => Panel.IsGridded;
+        set
+        {
+            if (value) _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOn);
+            else _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOff);
+            Panel.IsGridded = value;
+        }
+    }
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     private Rect2I _field = new(4, 0, 16, 1);
+    private Vector2I _gridCoords = new(19, 0);
     [Export]
     private ComponentPaletteBackgroundLayer _backgroundLayer;
     [Export]
     private ComponentPaletteMainLayer _mainLayer;
     [Export]
     private ComponentPaletteCursorLayer _cursorLayer;
-    private static readonly Vector2I _gridCoords = new(19, 0);
-    public override void _Ready()
-    {
-        base._Ready();
-
-        Variant? v = GameSaver.Load("IsGridded");
-        if (v.HasValue)
-        {
-            if ((bool)v) _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOn);
-            else _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOff);
-        }
-    }
 
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)
     {
@@ -52,32 +50,29 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             case ComponentPaletteChoice.Erase:
                 if (_cursorLayer.Selection == coords) return;
                 _cursorLayer.Selection = coords;
-                foreach (ComponentPanel panel in Panels) panel.Brush = UnitFrom(choice);
+                Panel.Brush = UnitFrom(choice);
                 return;
             case ComponentPaletteChoice.Clear:
-                foreach (ComponentPanel panel in Panels) panel.ClearTile();
+                Panel.ClearTile();
                 return;
             case ComponentPaletteChoice.GridOn:
                 _mainLayer.AssignChoice(coords, ComponentPaletteChoice.GridOff);
-                foreach (ComponentPanel panel in Panels) panel.IsGridded = false;
+                Panel.IsGridded = false;
                 return;
             case ComponentPaletteChoice.GridOff:
                 _mainLayer.AssignChoice(coords, ComponentPaletteChoice.GridOn);
-                foreach (ComponentPanel panel in Panels) panel.IsGridded = true;
+                Panel.IsGridded = true;
                 return;
             case ComponentPaletteChoice.Step:
-                foreach (ComponentPanel panel in Panels)
+                if (Panel.Processor == null)
                 {
-                    if (panel.Processor == null)
+                    Panel.Processor = new(Panel);
+                    Panel.Processor.Start(new()
                     {
-                        panel.Processor = new(panel);
-                        panel.Processor.Start(new()
-                        {
-                            {Direction.Right, new() { new(1, 1, MonoPicture.MonoColor.Black) }}
-                        });
-                    }
-                    else panel.Processor.Step();
+                        {Direction.Right, new() { new(1, 1, MonoPicture.MonoColor.Black) }}
+                    });
                 }
+                else Panel.Processor.Step();
                 return;
             case ComponentPaletteChoice.Play:
             case ComponentPaletteChoice.Speed:
@@ -88,14 +83,11 @@ public partial class ComponentPalette : Node2D, IMouseInputable
         }
         else if (button == MouseButton.Right)
         {
-            foreach (ComponentPanel panel in Panels)
+            if (Panel.Brush == UnitFrom(choice))
             {
-                if (panel.Brush == UnitFrom(choice))
-                {
-                    panel.Brush = ComponentPanelTile.None;
-                    _cursorLayer.Selection = null;
-                    _cursorLayer.SetCursor(coords);
-                }
+                Panel.Brush = ComponentPanelTile.None;
+                _cursorLayer.Selection = null;
+                _cursorLayer.SetCursor(coords);
             }
         }
     }
