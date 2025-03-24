@@ -2,6 +2,21 @@ using Godot;
 
 public partial class ComponentPaletteMainLayer : TileMapLayer
 {
+    public PaletteStatus Status { get; private set; } = PaletteStatus.Drawing;
+    public enum PaletteStatus { Drawing, Processing, Pausing }
+    public bool IsGridded
+    {
+        get => _isGridded;
+        set
+        {
+            if (Status == PaletteStatus.Drawing)
+            {
+                _isGridded = value;
+                if (value) AssignChoice(_gridCoords, ComponentPaletteChoice.GridOn);
+                else AssignChoice(_gridCoords, ComponentPaletteChoice.GridOff);
+            }
+        }
+    }
     public void AssignChoice(Vector2I coords, ComponentPaletteChoice choice)
     {
         if (choice == ComponentPaletteChoice.None) return;
@@ -9,10 +24,109 @@ public partial class ComponentPaletteMainLayer : TileMapLayer
     }
     public ComponentPaletteChoice GetChoice(Vector2I coords)
         => ComponentPaletteMainLayer.ChoiceFrom(GetCellAtlasCoords(coords));
+    public (ComponentPaletteChoice, bool) GetChoiceIncludingShadow(Vector2I coords)
+    {
+        bool isShadow = false;
+        ComponentPaletteChoice choice = ChoiceFrom(GetCellAtlasCoords(coords));
+        if (choice == ComponentPaletteChoice.None)
+        {
+            choice = ChoiceFrom(GetCellAtlasCoords(coords) - new Vector2I(0, 1));
+            if (choice != ComponentPaletteChoice.None) isShadow = true;
+        }
+        return (choice, isShadow);
+    }
+    public void SetStatus(PaletteStatus status, Vector2I clickedCoords = default)
+    {
+        switch (status)
+        {
+            case PaletteStatus.Drawing:
+                if (Status != PaletteStatus.Drawing)
+                {
+                    foreach (Vector2I coords in GetUsedCells())
+                    {
+                        ComponentPaletteChoice choice = GetChoiceIncludingShadow(coords).Item1;
+                        switch (choice)
+                        {
+                            case ComponentPaletteChoice.Black:
+                            case ComponentPaletteChoice.White:
+                            case ComponentPaletteChoice.Red:
+                            case ComponentPaletteChoice.Blue:
+                            case ComponentPaletteChoice.Green:
+                            case ComponentPaletteChoice.Yellow:
+                            case ComponentPaletteChoice.Purple:
+                            case ComponentPaletteChoice.Orange:
+                            case ComponentPaletteChoice.Input:
+                            case ComponentPaletteChoice.Output:
+                            case ComponentPaletteChoice.Erase:
+                            case ComponentPaletteChoice.Clear:
+                                SetCell(coords, _sourceID, ComponentPaletteMainLayer.AtlasCoordsFrom(choice));
+                                break;
+                            case ComponentPaletteChoice.Halt:
+                                if (_isGridded) AssignChoice(coords, ComponentPaletteChoice.GridOn);
+                                else AssignChoice(coords, ComponentPaletteChoice.GridOff);
+                                break;
+                        }
+                    }
+                }
+                Status = status;
+                return;
+            case PaletteStatus.Processing:
+            case PaletteStatus.Pausing:
+                if (Status == PaletteStatus.Drawing)
+                {
+                    foreach (Vector2I coords in GetUsedCells())
+                    {
+                        ComponentPaletteChoice choice = GetChoice(coords);
+                        switch (choice)
+                        {
+                            case ComponentPaletteChoice.Black:
+                            case ComponentPaletteChoice.White:
+                            case ComponentPaletteChoice.Red:
+                            case ComponentPaletteChoice.Blue:
+                            case ComponentPaletteChoice.Green:
+                            case ComponentPaletteChoice.Yellow:
+                            case ComponentPaletteChoice.Purple:
+                            case ComponentPaletteChoice.Orange:
+                            case ComponentPaletteChoice.Input:
+                            case ComponentPaletteChoice.Output:
+                            case ComponentPaletteChoice.Erase:
+                            case ComponentPaletteChoice.Clear:
+                                SetCell(coords, _sourceID, ComponentPaletteMainLayer.AtlasCoordsFrom(choice) + new Vector2I(0, 1));
+                                break;
+                            case ComponentPaletteChoice.GridOff:
+                            case ComponentPaletteChoice.GridOn:
+                                AssignChoice(coords, ComponentPaletteChoice.Halt);
+                                break;
+                        }
+                    }
+                }
+                switch (GetChoice(clickedCoords))
+                {
+                    case ComponentPaletteChoice.Step:
+                        break;
+                    case ComponentPaletteChoice.Play:
+                    case ComponentPaletteChoice.Speed:
+                        AssignChoice(clickedCoords, ComponentPaletteChoice.Pause);
+                        break;
+                    case ComponentPaletteChoice.Pause:
+                        if (clickedCoords == _playCoords) AssignChoice(clickedCoords, ComponentPaletteChoice.Play);
+                        else if (clickedCoords == _speedCoords) AssignChoice(clickedCoords, ComponentPaletteChoice.Speed);
+                        break;
+                }
+                Status = status;
+                return;
+            default:
+                return;
+        }
+    }
     
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     private int _sourceID;
+    private Vector2I _playCoords = new(17, 0);
+    private Vector2I _speedCoords = new(18, 0);
+    private Vector2I _gridCoords = new(19, 0);
+    private bool _isGridded = true;
     public override void _Ready()
     {
         base._Ready();
@@ -41,7 +155,7 @@ public partial class ComponentPaletteMainLayer : TileMapLayer
             case ComponentPaletteChoice.Speed:       return new Vector2I(6, 2);
             case ComponentPaletteChoice.Pause:       return new Vector2I(7, 2);
             case ComponentPaletteChoice.Halt:        return new Vector2I(6, 3);
-            default:                        return new Vector2I(-1, -1);
+            default:                                 return new Vector2I(-1, -1);
         }
     }
     private static ComponentPaletteChoice ChoiceFrom(Vector2I atlasCoords)

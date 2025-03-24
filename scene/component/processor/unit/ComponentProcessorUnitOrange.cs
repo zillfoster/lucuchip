@@ -8,17 +8,18 @@ public class ComponentProcessorUnitOrange : ComponentProcessorUnit
     {
         Directions dirs = Directions.None;
         foreach (var (dir, picts) in received) dirs |= dir.ToDirections();
-        if ((dirs | Directions.Vertical) != Directions.None &&
-            (dirs | Directions.Horizontal) == Directions.None)
+        if ((dirs & Directions.Vertical) == Directions.Vertical &&
+            (dirs & Directions.Horizontal) == Directions.None)
         {
             List<MonoPicture> list = new();
             foreach (MonoPicture up in received[Direction.Up])
                 foreach (MonoPicture down in received[Direction.Down])
                     JoinHeight(up, down, ref list);
+            Godot.GD.Print(dirs, " ", list);
             return new() {{Directions.Horizontal, list}};
         }
-        if ((dirs | Directions.Horizontal) != Directions.None &&
-            (dirs | Directions.Vertical) == Directions.None) 
+        if ((dirs & Directions.Horizontal) == Directions.Horizontal &&
+            (dirs & Directions.Vertical) == Directions.None) 
         {
             List<MonoPicture> list = new();
             foreach (MonoPicture left in received[Direction.Left])

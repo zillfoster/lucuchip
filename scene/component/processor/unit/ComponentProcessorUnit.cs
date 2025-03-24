@@ -23,7 +23,7 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
     private Dictionary<Direction, IComponentInputable> _neighbors = new();
     public void Receive(Direction from, List<MonoPicture> picts)
     {
-        if (_isOutputLock && _currentMemory.OutputAccum.HasFlag(from)) return;
+        if (_isOutputLock && _currentMemory.OutputAccum.HasFlag(from.ToDirections())) return;
         _nextMemory.InputAccum |= from.ToDirections();
         foreach (MonoPicture pict in picts) _nextMemory.Receive(from, pict);
     }

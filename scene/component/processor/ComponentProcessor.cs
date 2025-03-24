@@ -16,13 +16,18 @@ public class ComponentProcessor
         foreach (var (coords, processable) in _processables) processable.Initialize();
         foreach (var (dir, picts) in inputPicts) InputReceived?.Invoke(this, new(dir, picts));
     }
-    public void Step()
+    public bool Step()
     {
         _roundCount++;
         GD.Print("round ", _roundCount);
         foreach (var (coords, processable) in _processables) processable.StepInitialize();
         foreach (var (coords, processable) in _processables) processable.StepProcess();
-        if (_roundCount >= MAX_ROUND_COUNT || _outputs.Count != 0) Halt();
+        if (_roundCount >= MAX_ROUND_COUNT || _outputs.Count != 0)
+        {
+            Halt();
+            return false;
+        }
+        return true;
     }
     public void Halt()
     {

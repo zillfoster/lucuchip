@@ -8,8 +8,8 @@ public class ComponentProcessorUnitPurple : ComponentProcessorUnit
     {
         Directions dirs = Directions.None;
         foreach (var (dir, picts) in received) dirs |= dir.ToDirections();
-        if ((dirs | Directions.Vertical) != Directions.None &&
-            (dirs | Directions.Horizontal) == Directions.None) 
+        if ((dirs & Directions.Vertical) != Directions.None &&
+            (dirs & Directions.Horizontal) == Directions.None) 
         {
             List<MonoPicture> leftlist = new();
             List<MonoPicture> rightlist = new();
@@ -22,8 +22,8 @@ public class ComponentProcessorUnitPurple : ComponentProcessorUnit
                 {Directions.Right, rightlist},
             };
         }
-        if ((dirs | Directions.Horizontal) != Directions.None &&
-            (dirs | Directions.Vertical) == Directions.None) 
+        if ((dirs & Directions.Horizontal) != Directions.None &&
+            (dirs & Directions.Vertical) == Directions.None) 
         {
             List<MonoPicture> uplist = new();
             List<MonoPicture> downlist = new();

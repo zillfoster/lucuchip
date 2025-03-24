@@ -44,7 +44,7 @@ public partial class Component : Node2D, ISavable
         if (loadedData.ContainsKey("IsGridded"))
         {
             bool isGridded = (bool)loadedData["IsGridded"];
-            _palette.IsGridded = isGridded;
+            _palette.SetIsGridded(isGridded);
             _panel.IsGridded = isGridded;
         }
         if (loadedData.ContainsKey("PanelTiles"))

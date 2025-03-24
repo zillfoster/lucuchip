@@ -1,22 +1,14 @@
 using Godot;
+using static ComponentPaletteMainLayer;
 
 public partial class ComponentPalette : Node2D, IMouseInputable
 {
-    public ComponentPanel Panel { get; set; } = new();
-    public bool IsGridded
-    {
-        get => _mainLayer.GetChoice(_gridCoords) == ComponentPaletteChoice.GridOn;
-        set
-        {
-            if (value) _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOn);
-            else _mainLayer.AssignChoice(_gridCoords, ComponentPaletteChoice.GridOff);
-        }
-    }
+    public ComponentPanel Panel { get; set; } = null;
+    public void SetIsGridded(bool isGridded) => _mainLayer.IsGridded = isGridded;
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     private Rect2I _field = new(4, 0, 16, 1);
-    private Vector2I _gridCoords = new(19, 0);
     [Export]
     private ComponentPaletteBackgroundLayer _backgroundLayer;
     [Export]
@@ -55,28 +47,30 @@ public partial class ComponentPalette : Node2D, IMouseInputable
                 Panel.ClearTile();
                 return;
             case ComponentPaletteChoice.GridOn:
-                this.IsGridded = false;
+                _mainLayer.IsGridded = false;
                 Panel.IsGridded = false;
                 return;
             case ComponentPaletteChoice.GridOff:
-                this.IsGridded = true;
+                _mainLayer.IsGridded = true;
                 Panel.IsGridded = true;
                 return;
             case ComponentPaletteChoice.Step:
-                if (Panel.Processor == null)
+                if (_mainLayer.Status == PaletteStatus.Drawing) StartProcess();
+                if (Panel.Processor.Step())
+                    _mainLayer.SetStatus(PaletteStatus.Pausing, coords);
+                else
                 {
-                    Panel.Processor = new(Panel);
-                    Panel.Processor.Start(new()
-                    {
-                        {Direction.Right, new() { new(1, 1, MonoPicture.MonoColor.Black) }}
-                    });
+                    EndProcess();
+                    _mainLayer.SetStatus(PaletteStatus.Drawing);
                 }
-                else Panel.Processor.Step();
                 return;
             case ComponentPaletteChoice.Play:
             case ComponentPaletteChoice.Speed:
             case ComponentPaletteChoice.Pause:
             case ComponentPaletteChoice.Halt:
+                EndProcess();
+                _mainLayer.SetStatus(PaletteStatus.Drawing);
+                return;
             default:
                 return;
         }
@@ -100,6 +94,22 @@ public partial class ComponentPalette : Node2D, IMouseInputable
         => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));
     private bool FieldContains(Vector2I coords)
         => _field.HasArea()? _field.HasPoint(coords): false;
+    private void StartProcess()
+    {
+        Panel.Processor = new(Panel);
+        Panel.Processor.Start(new()
+        {
+            {Direction.Right, new() { new(1, 1, MonoPicture.MonoColor.Black) }}
+        });
+        Panel.IsEditable = false;
+        Panel.Brush = ComponentPanelTile.None;
+        _cursorLayer.Selection = null;
+    }
+    private void EndProcess()
+    {
+        Panel.Processor = null;
+        Panel.IsEditable = true;
+    }
     private static ComponentPanelTile UnitFrom(ComponentPaletteChoice choice)
     {
         switch(choice)

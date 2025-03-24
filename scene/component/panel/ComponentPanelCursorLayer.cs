@@ -34,7 +34,7 @@ public partial class ComponentPanelCursorLayer : TileMapLayer
             case ComponentPanelTile.Input:    return new Vector2I(0, 3);
             case ComponentPanelTile.Output:   return new Vector2I(1, 3);
             case ComponentPanelTile.Erase:    return new Vector2I(2, 2);
-            default:                return new Vector2I(-1, -1);
+            default:                          return new Vector2I(-1, -1);
         }
     }
     private static readonly Vector2I _altEraseAtlasCoords = new(2, 3);
