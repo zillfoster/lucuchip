@@ -65,6 +65,10 @@ public partial class ComponentPaletteMainLayer : TileMapLayer
                                 if (_isGridded) AssignChoice(coords, ComponentPaletteChoice.GridOn);
                                 else AssignChoice(coords, ComponentPaletteChoice.GridOff);
                                 break;
+                            case ComponentPaletteChoice.Pause:
+                                if (coords == _playCoords) AssignChoice(coords, ComponentPaletteChoice.Play);
+                                else if (coords == _speedCoords) AssignChoice(coords, ComponentPaletteChoice.Speed);
+                                break;
                         }
                     }
                 }

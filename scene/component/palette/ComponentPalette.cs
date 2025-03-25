@@ -1,5 +1,6 @@
 using Godot;
 using static ComponentPaletteMainLayer;
+using static ComponentProcessor;
 
 public partial class ComponentPalette : Node2D, IMouseInputable
 {
@@ -55,21 +56,11 @@ public partial class ComponentPalette : Node2D, IMouseInputable
                 Panel.IsGridded = true;
                 return;
             case ComponentPaletteChoice.Step:
-                if (_mainLayer.Status == PaletteStatus.Drawing) StartProcess();
-                if (Panel.Processor.Step())
-                    _mainLayer.SetStatus(PaletteStatus.Pausing, coords);
-                else
-                {
-                    EndProcess();
-                    _mainLayer.SetStatus(PaletteStatus.Drawing);
-                }
-                return;
             case ComponentPaletteChoice.Play:
             case ComponentPaletteChoice.Speed:
             case ComponentPaletteChoice.Pause:
             case ComponentPaletteChoice.Halt:
-                EndProcess();
-                _mainLayer.SetStatus(PaletteStatus.Drawing);
+                SetProcessStatus(ProcessorStatusFrom(choice), coords);
                 return;
             default:
                 return;
@@ -94,9 +85,31 @@ public partial class ComponentPalette : Node2D, IMouseInputable
         => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));
     private bool FieldContains(Vector2I coords)
         => _field.HasArea()? _field.HasPoint(coords): false;
+    private void SetProcessStatus(ProcessorStatus status, Vector2I coords)
+    {
+        if (_mainLayer.Status == PaletteStatus.Drawing) StartProcess();
+        Panel.Processor.SetStatus(status);
+        if (Panel.Processor == null) return;
+        switch (status)
+        {
+            case ProcessorStatus.Halting:
+                EndProcess();
+                return;
+            case ProcessorStatus.Pausing:
+            case ProcessorStatus.Stepping:
+                _mainLayer.SetStatus(PaletteStatus.Pausing, coords);
+                return;
+            case ProcessorStatus.Processing:
+            case ProcessorStatus.Speeding:
+                _mainLayer.SetStatus(PaletteStatus.Processing, coords);
+                return;
+        }
+    }
     private void StartProcess()
     {
         Panel.Processor = new(Panel);
+        Panel.AddChild(Panel.Processor);
+        Panel.Processor.Halted += (sender, e) => { EndProcess(); };
         Panel.Processor.Start(new()
         {
             {Direction.Right, new() { new(1, 1, MonoPicture.MonoColor.Black) }}
@@ -104,11 +117,14 @@ public partial class ComponentPalette : Node2D, IMouseInputable
         Panel.IsEditable = false;
         Panel.Brush = ComponentPanelTile.None;
         _cursorLayer.Selection = null;
+        _mainLayer.SetStatus(PaletteStatus.Pausing);
     }
     private void EndProcess()
     {
+        Panel.Processor.QueueFree();
         Panel.Processor = null;
         Panel.IsEditable = true;
+        _mainLayer.SetStatus(PaletteStatus.Drawing);
     }
     private static ComponentPanelTile UnitFrom(ComponentPaletteChoice choice)
     {
@@ -126,6 +142,18 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             case ComponentPaletteChoice.Output:  return ComponentPanelTile.Output;
             case ComponentPaletteChoice.Erase:   return ComponentPanelTile.Erase;
             default:                             return ComponentPanelTile.None;
+        }
+    }
+    private static ProcessorStatus ProcessorStatusFrom(ComponentPaletteChoice choice)
+    {
+        switch(choice)
+        {
+            case ComponentPaletteChoice.Step:   return ProcessorStatus.Stepping;
+            case ComponentPaletteChoice.Play:   return ProcessorStatus.Processing;
+            case ComponentPaletteChoice.Speed:  return ProcessorStatus.Speeding;
+            case ComponentPaletteChoice.Pause:  return ProcessorStatus.Pausing;
+            case ComponentPaletteChoice.Halt:   return ProcessorStatus.Halting;
+            default:                            return ProcessorStatus.Halting;
         }
     }
 }
