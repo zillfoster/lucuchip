@@ -15,7 +15,6 @@ public class ComponentProcessorUnitOrange : ComponentProcessorUnit
             foreach (MonoPicture up in received[Direction.Up])
                 foreach (MonoPicture down in received[Direction.Down])
                     JoinHeight(up, down, ref list);
-            Godot.GD.Print(dirs, " ", list);
             return new() {{Directions.Horizontal, list}};
         }
         if ((dirs & Directions.Horizontal) == Directions.Horizontal &&
