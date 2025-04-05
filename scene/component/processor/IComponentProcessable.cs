@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public interface IComponentProcessable
 {
     public IComponentInputable TryGetComponentInputable();
@@ -5,4 +7,5 @@ public interface IComponentProcessable
     public void Initialize();
     public void StepInitialize();
     public void StepProcess();
+    public Dictionary<Direction, List<MonoPicture>> GetReceivedPictures();
 }

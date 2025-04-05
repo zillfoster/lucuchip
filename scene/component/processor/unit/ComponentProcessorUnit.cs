@@ -23,7 +23,7 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
     private Dictionary<Direction, IComponentInputable> _neighbors = new();
     public void Receive(Direction from, List<MonoPicture> picts)
     {
-        if (_isOutputLock && _currentMemory.OutputAccum.HasFlag(from.ToDirections())) return;
+        if (_isOutputLock && _currentMemory.OutputAccum.HasDirection(from)) return;
         _nextMemory.InputAccum |= from.ToDirections();
         foreach (MonoPicture pict in picts) _nextMemory.Receive(from, pict);
     }
@@ -43,14 +43,14 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
     }
     public virtual void StepProcess()
     {
-        Dictionary<Directions, List<MonoPicture>> sending = Send(GetReadyForSend(_currentMemory.ReceivedPictures));
+        Dictionary<Directions, List<MonoPicture>> sending = Send(GetReceivedPictures());
         foreach (var (dirs, picts) in sending)
         {
             if (picts.Count == 0) continue;
             DirectedAct(dirs, (d) =>
             {
                 if (_neighbors.ContainsKey(d) &&
-                    !(_isInputLock && _currentMemory.InputAccum.HasFlag(d.ToDirections())))
+                    !(_isInputLock && _currentMemory.InputAccum.HasDirection(d)))
                 {
                     _nextMemory.OutputAccum |= d.ToDirections();
                     _neighbors[d].Receive(d.ToOppositeDirection(), picts);
@@ -58,15 +58,16 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
             });
         }
     }
-    public static Dictionary<Direction, List<MonoPicture>> GetReadyForSend(IReadOnlyDictionary<Direction, IReadOnlyList<MonoPicture>> receivedPictures)
+    public Dictionary<Direction, List<MonoPicture>> GetReceivedPictures()
     {
-        Dictionary<Direction, List<MonoPicture>> readyForSend = new();
-        foreach (var (dir, picts) in receivedPictures)
+        Dictionary<Direction, List<MonoPicture>> receivedPictures = new();
+        foreach (var (dir, picts) in _currentMemory.ReceivedPictures)
         {
             if (picts.Count == 0) continue;
-            readyForSend[dir] = new();
-            foreach (MonoPicture pict in receivedPictures[dir]) readyForSend[dir].Add(pict);
+            receivedPictures[dir] = new();
+            foreach (MonoPicture pict in _currentMemory.ReceivedPictures[dir])
+                receivedPictures[dir].Add(pict);
         }
-        return readyForSend;
+        return receivedPictures;
     }
 }

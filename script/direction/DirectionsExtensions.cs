@@ -22,6 +22,8 @@ public static class DirectionsExtensions
            dir == Direction.Right?  Vector2I.Right: 
            Vector2I.Zero;
     
+    public static bool HasDirection(this Directions dirs, Direction d)
+        => dirs.HasFlag(d.ToDirections());
     public static void DirectedAct(Directions dirs, Action<Direction> action)
     {
         if (dirs.HasFlag(Directions.Up))    action(Direction.Up);
