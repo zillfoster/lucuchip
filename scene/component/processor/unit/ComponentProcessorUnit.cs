@@ -24,7 +24,6 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
     public void Receive(Direction from, List<MonoPicture> picts)
     {
         if (_isOutputLock && _currentMemory.OutputAccum.HasDirection(from)) return;
-        _nextMemory.InputAccum |= from.ToDirections();
         foreach (MonoPicture pict in picts) _nextMemory.Receive(from, pict);
     }
     public IComponentInputable TryGetComponentInputable()
@@ -52,7 +51,7 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
                 if (_neighbors.ContainsKey(d) &&
                     !(_isInputLock && _currentMemory.InputAccum.HasDirection(d)))
                 {
-                    _nextMemory.OutputAccum |= d.ToDirections();
+                    foreach (MonoPicture pict in picts) _nextMemory.Send(d, pict);
                     _neighbors[d].Receive(d.ToOppositeDirection(), picts);
                 }
             });

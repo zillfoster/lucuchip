@@ -78,7 +78,9 @@ public partial class ComponentPalette : Node2D, IMouseInputable
     void IMouseInputable.OnMouseMotion(Vector2 position, Vector2 relative, MouseButtonMask mask, MouseButton lastButton, Vector2? lastPosition)
     {
         Vector2I coords = CoordsFrom(position);
-        if (FieldContains(coords)) _cursorLayer.SetCursor(coords);
+        if (FieldContains(coords) &&
+            _mainLayer.GetChoice(coords) != ComponentPaletteChoice.None)
+            _cursorLayer.SetCursor(coords);
         else _cursorLayer.Selection = _cursorLayer.Selection;
     }
     private Vector2I CoordsFrom(Vector2 position)
