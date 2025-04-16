@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public partial class ComponentPanel : Node2D, IMouseInputable
 {
     public ComponentProcessor Processor { get; set; } = null;
+    public ComponentProcessorMonitor Monitor { get; set; } = null;
     public bool IsEditable { get; set; } = true;
     public ComponentPanelTile Brush { get; set; } = ComponentPanelTile.None;
     public void DrawTile(Vector2 position)

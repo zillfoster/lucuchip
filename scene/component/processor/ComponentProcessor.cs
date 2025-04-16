@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using static ComponentProcessorUnitFactory;
 using static DirectionsExtensions;
 
-public partial class ComponentProcessor: Node
+public partial class ComponentProcessor: Node2D
 {
+    public ComponentProcessorMonitor Monitor { get; set; } = null;
     public int RoundCount => _roundCount;
     public const int MAX_ROUND_COUNT = 65536;
     public void Start(Dictionary<Direction, List<MonoPicture>> inputPicts)
     {
         DirectSetStatus(ProcessorStatus.Pausing);
         _roundCount = 0;
-        GD.Print("round ", _roundCount);
         _outputs.Clear();
+        Monitor.ClearMemory();
         foreach (var (coords, processable) in _processables) processable.Initialize();
         foreach (var (dir, picts) in inputPicts) InputReceived?.Invoke(this, new(dir, picts));
     }
@@ -21,9 +22,18 @@ public partial class ComponentProcessor: Node
     {
         if (Status == ProcessorStatus.Halting) return;
         _roundCount++;
-        GD.Print("round ", _roundCount);
         foreach (var (coords, processable) in _processables) processable.StepInitialize();
         foreach (var (coords, processable) in _processables) processable.StepProcess();
+
+        Monitor.ClearMemory();
+        foreach (var (coords, processable) in _processables) Monitor.AssignMemory(coords, processable.GetCurrentMemory());
+        if (_roundCount == 1)
+        {
+            foreach (var (coords, processable) in _processables)
+                if (processable is ComponentProcessorUnitInput input)
+                    Monitor.AssignActivation(coords, true);
+        }
+
         if (_roundCount >= MAX_ROUND_COUNT || _outputs.Count != 0)
         {
             SetStatus(ProcessorStatus.Halting);
@@ -53,11 +63,11 @@ public partial class ComponentProcessor: Node
                 Step();
                 return;
             case ProcessorStatus.Processing:
-                _timer.WaitTime = 0.4;
+                _timer.WaitTime = 0.25;
                 _timer.Start();
                 return;
             case ProcessorStatus.Speeding:
-                _timer.WaitTime = 0.1;
+                _timer.WaitTime = 0.08;
                 _timer.Start();
                 return;
             default:
@@ -112,7 +122,7 @@ public partial class ComponentProcessor: Node
     {
         Dictionary<Vector2I, ComponentProcessorUnitLabel> units = new();
         foreach (var (coords, tile) in panel.GetTiles())
-            units.Add(coords - panel.Field.Position, new(tile));
+            units.Add(coords, new(tile));
         return units;
     }
 }

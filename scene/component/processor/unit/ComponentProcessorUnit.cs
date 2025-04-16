@@ -28,6 +28,7 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
     }
     public IComponentInputable TryGetComponentInputable()
         => _isInputable? this: null;
+    public ComponentUnitMemory GetCurrentMemory() => _currentMemory;
     public virtual void SetNeighbor(Direction dir, IComponentInputable neighbor)
         => _neighbors[dir] = neighbor;
     public virtual void Initialize()
@@ -57,7 +58,7 @@ public abstract class ComponentProcessorUnit: IComponentProcessable, IComponentI
             });
         }
     }
-    public Dictionary<Direction, List<MonoPicture>> GetReceivedPictures()
+    private Dictionary<Direction, List<MonoPicture>> GetReceivedPictures()
     {
         Dictionary<Direction, List<MonoPicture>> receivedPictures = new();
         foreach (var (dir, picts) in _currentMemory.ReceivedPictures)

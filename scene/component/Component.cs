@@ -7,6 +7,8 @@ public partial class Component : Node2D, ISavable
     private ComponentPanel _panel;
     [Export]
     private ComponentPalette _palette;
+    [Export]
+    private ComponentProcessorMonitor _monitor;
     public override void _Ready()
     {
         base._Ready();
@@ -14,6 +16,7 @@ public partial class Component : Node2D, ISavable
         Input.UseAccumulatedInput = false;
 
         _palette.Panel = _panel;
+        _panel.Monitor = _monitor;
 
         AddChild(new MouseInputHandler() {_panel, _palette});
     }
