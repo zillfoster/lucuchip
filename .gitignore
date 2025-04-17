@@ -1,6 +1,0 @@
-# Godot 4+ specific ignores
-.godot/
-/android/
-.DS_Store
-asset/*.aseprite
-/.vscode
