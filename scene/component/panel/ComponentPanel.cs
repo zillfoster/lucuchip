@@ -28,7 +28,7 @@ public partial class ComponentPanel : Node2D, IMouseInputable
         => _mainLayer.GetTile(CoordsFrom(position));
     public Dictionary<Vector2I, ComponentPanelTile> GetTiles()
     {
-        Dictionary<Vector2I, ComponentPanelTile> tiles = new();
+        Dictionary<Vector2I, ComponentPanelTile> tiles = [];
         foreach (Vector2I coords in _mainLayer.GetUsedCells())
             tiles.Add(coords, _mainLayer.GetTile(coords));
         return tiles;

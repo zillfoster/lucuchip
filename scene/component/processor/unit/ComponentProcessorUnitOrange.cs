@@ -11,7 +11,7 @@ public class ComponentProcessorUnitOrange : ComponentProcessorUnit
         if ((dirs & Directions.Vertical) == Directions.Vertical &&
             (dirs & Directions.Horizontal) == Directions.None)
         {
-            List<MonoPicture> list = new();
+            List<MonoPicture> list = [];
             foreach (MonoPicture up in received[Direction.Up])
                 foreach (MonoPicture down in received[Direction.Down])
                     JoinHeight(up, down, ref list);
@@ -20,13 +20,13 @@ public class ComponentProcessorUnitOrange : ComponentProcessorUnit
         if ((dirs & Directions.Horizontal) == Directions.Horizontal &&
             (dirs & Directions.Vertical) == Directions.None) 
         {
-            List<MonoPicture> list = new();
+            List<MonoPicture> list = [];
             foreach (MonoPicture left in received[Direction.Left])
                 foreach (MonoPicture right in received[Direction.Right])
                     JoinHeight(left, right, ref list);
             return new() {{Directions.Vertical, list}};
         }
-        return new();
+        return [];
     }
     public static void JoinWidth(MonoPicture left, MonoPicture right, ref List<MonoPicture> list)
     {

@@ -5,7 +5,7 @@ public class ComponentProcessorUnitWhite : ComponentProcessorUnit
     public ComponentProcessorUnitWhite() : base(true, false) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
-        List<MonoPicture> sending = new();
+        List<MonoPicture> sending = [];
         foreach (var (dir, picts) in received)
             foreach (MonoPicture pict in picts)
             {

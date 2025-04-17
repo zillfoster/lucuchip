@@ -80,7 +80,7 @@ public partial class ComponentProcessor: Node2D
         foreach (var (coords, label) in units)
         {
             IComponentProcessable processable = CreateProcessorUnit(label);
-            if (processable is ComponentProcessorUnitInput input) this.InputReceived += input.OnInputReceived;
+            if (processable is ComponentProcessorUnitInput input) InputReceived += input.OnInputReceived;
             if (processable is ComponentProcessorUnitOutput output) output.OutputReceived += OnOutputReceived;
             _processables[coords] = processable;
         }
@@ -106,21 +106,21 @@ public partial class ComponentProcessor: Node2D
     // No need to read them unless you are modifying this class.
     private int _roundCount = 0;
     private Timer _timer = new();
-    private Dictionary<Vector2I, IComponentProcessable> _processables = new();
-    private Dictionary<Direction, List<MonoPicture>> _outputs = new();
+    private readonly Dictionary<Vector2I, IComponentProcessable> _processables = [];
+    private readonly Dictionary<Direction, List<MonoPicture>> _outputs = [];
     private event EventHandler<PicturesReceivedEventArgs> InputReceived;
     private void OnOutputReceived(object sender, PicturesReceivedEventArgs e)
     {
         if (e.Pictures.Count != 0)
         {
-            if (!_outputs.ContainsKey(e.Toward)) _outputs[e.Toward] = new();
+            if (!_outputs.ContainsKey(e.Toward)) _outputs[e.Toward] = [];
             foreach (MonoPicture pict in e.Pictures) _outputs[e.Toward].Add(pict);
         }
     }
     private void DirectSetStatus(ProcessorStatus status) => Status = status;
     private static Dictionary<Vector2I, ComponentProcessorUnitLabel> UnitsFrom(ComponentPanel panel)
     {
-        Dictionary<Vector2I, ComponentProcessorUnitLabel> units = new();
+        Dictionary<Vector2I, ComponentProcessorUnitLabel> units = [];
         foreach (var (coords, tile) in panel.GetTiles())
             units.Add(coords, new(tile));
         return units;

@@ -22,11 +22,12 @@ public partial class Component : Node2D, ISavable
     }
     public Dictionary<string, Variant> Save()
     {
-        Dictionary<string, Variant> save = new();
-        
-        save.Add("IsGridded", _panel.IsGridded);
+        Dictionary<string, Variant> save = new()
+        {
+            { "IsGridded", _panel.IsGridded }
+        };
 
-        Godot.Collections.Dictionary<int, Godot.Collections.Dictionary<string, int>> tiles = new();
+        Godot.Collections.Dictionary<int, Godot.Collections.Dictionary<string, int>> tiles = [];
         int i = 0;
         foreach (var (coords, tile) in _panel.GetTiles())
         {
@@ -64,6 +65,6 @@ public partial class Component : Node2D, ISavable
             }
         }
     }
-    public string GetIdentity() => this.Name;
+    public string GetIdentity() => Name;
 
 }

@@ -9,7 +9,7 @@ public class ComponentProcessorUnitOutput : ComponentProcessorUnit
     {
         foreach (var (dir, picts) in received)
         {
-            List<MonoPicture> sending = new();
+            List<MonoPicture> sending = [];
             foreach (MonoPicture pict in picts)
                 if (!sending.Contains(pict)) sending.Add(pict);
             if (sending.Count != 0)

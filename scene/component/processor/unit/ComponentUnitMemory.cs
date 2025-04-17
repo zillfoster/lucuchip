@@ -45,8 +45,8 @@ public class ComponentUnitMemory
         foreach(var (dir, picts) in _accessableSendingPictures)
             _sendingPictures.Add(dir, picts);
     }
-    private readonly Dictionary<Direction, IReadOnlyList<MonoPicture>> _receivedPictures = new();
-    private readonly Dictionary<Direction, IReadOnlyList<MonoPicture>> _sendingPictures = new();
+    private readonly Dictionary<Direction, IReadOnlyList<MonoPicture>> _receivedPictures = [];
+    private readonly Dictionary<Direction, IReadOnlyList<MonoPicture>> _sendingPictures = [];
     private readonly Dictionary<Direction, List<MonoPicture>> _accessableReceivedPictures = new()
     {
         {Direction.Up,     new()},

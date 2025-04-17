@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public partial class MouseInputHandler : Node2D, IEnumerable<IMouseInputable>
 {
     public bool IsEnable { get; set; } = true;
-    public List<IMouseInputable> Inputables { get; } = new();
+    public List<IMouseInputable> Inputables { get; } = [];
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.

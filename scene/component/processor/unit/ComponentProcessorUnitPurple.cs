@@ -11,8 +11,8 @@ public class ComponentProcessorUnitPurple : ComponentProcessorUnit
         if ((dirs & Directions.Vertical) != Directions.None &&
             (dirs & Directions.Horizontal) == Directions.None) 
         {
-            List<MonoPicture> leftlist = new();
-            List<MonoPicture> rightlist = new();
+            List<MonoPicture> leftlist = [];
+            List<MonoPicture> rightlist = [];
             foreach (var (dir, picts) in received)
                 foreach (var pict in picts)
                     SplitWidth(pict, ref leftlist, ref rightlist);
@@ -25,8 +25,8 @@ public class ComponentProcessorUnitPurple : ComponentProcessorUnit
         if ((dirs & Directions.Horizontal) != Directions.None &&
             (dirs & Directions.Vertical) == Directions.None) 
         {
-            List<MonoPicture> uplist = new();
-            List<MonoPicture> downlist = new();
+            List<MonoPicture> uplist = [];
+            List<MonoPicture> downlist = [];
             foreach (var (dir, picts) in received)
                 foreach (var pict in picts)
                     SplitHeight(pict, ref uplist, ref downlist);
@@ -36,7 +36,7 @@ public class ComponentProcessorUnitPurple : ComponentProcessorUnit
                 {Directions.Down, downlist},
             };
         }
-        return new();
+        return [];
     }
     public static void SplitWidth(MonoPicture from, ref List<MonoPicture> leftlist, ref List<MonoPicture> rightlist)
     {

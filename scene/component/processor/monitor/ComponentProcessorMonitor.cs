@@ -28,5 +28,5 @@ public partial class ComponentProcessorMonitor : Node2D
     // No need to read them unless you are modifying this class.
     [Export]
     private ComponentProcessorMonitorMainLayer _mainLayer;
-    private Dictionary<Vector2I, ComponentUnitMemory> _memories = new();
+    private readonly Dictionary<Vector2I, ComponentUnitMemory> _memories = [];
 }

@@ -24,10 +24,10 @@ public partial class GameSaver : Node
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     private static GameSaver This;
-    private const string VERSION = "demo 0.1";
+    private const string VERSION = "demo 0.2";
     private const string SAVE_PATH = "user://save.json";
-    private static readonly Dictionary<string, Variant> _loadedData = new();
-    private static readonly Dictionary<string, Func<Variant>> _willSaveData = new();
+    private static readonly Dictionary<string, Variant> _loadedData = [];
+    private static readonly Dictionary<string, Func<Variant>> _willSaveData = [];
     private static void OnVersionChanged()
     {
         // write operation for transforming data from previous version
@@ -59,7 +59,7 @@ public partial class GameSaver : Node
     {
         if (what == 1006) // Mainloop.NOTIFICATION_WM_CLOSE_REQUEST = 1006
         {
-            Godot.Collections.Dictionary<string, Variant> savingData = new();
+            Godot.Collections.Dictionary<string, Variant> savingData = [];
             foreach(var (key, method) in _willSaveData) savingData[key] = method();
 
             using FileAccess saveFile = FileAccess.Open(SAVE_PATH, FileAccess.ModeFlags.Write);
