@@ -31,8 +31,8 @@ public partial class ComponentProcessorMonitorActivationGeneralLayer : Component
         if (currentAtlasCoords == _directionAtlasBaseCoords[isFlipped ? direction: direction.ToOppositeDirection()])
             Assign(assignBaseCoords,
                    isFlipped ? 
-                   _directionAtlasBaseCoords[direction.ToOppositeDirection()] + _atlasDualOffset :
-                   _directionAtlasBaseCoords[direction] + _atlasDualOffset,
+                   _directionAtlasBaseCoords[direction] + _atlasDualOffset :
+                   _directionAtlasBaseCoords[direction.ToOppositeDirection()] + _atlasDualOffset,
                    offsets);
     }
     private static readonly Vector2I[] offsets = [new(0, 0), new(0, 1), new(1, 0), new(1, 1)];
