@@ -5,23 +5,28 @@ public partial class ComponentProcessorMonitor : Node2D, IMouseInputable
 {
     public bool IsMouseEnabled { get; set; } = false;
     public IDictionary<Vector2I, ComponentUnitMemory> Memories => _memories;
-    public List<Vector2I> DetailedMemoriesCoords { get; } = [];
+    public List<Vector2I> SpecialCoords { get; } = [];
     public void Initialize()
     {
         _memories.Clear();
-        _activationLayer.Clear();
+        _activationGeneralLayer.Clear();
+        _activationSpecialLayer.Clear();
     }
     public void Refresh()
     {
         foreach (var (coords, memory) in _memories)
-            _activationLayer.Activate(coords, memory, DetailedMemoriesCoords.Contains(coords));
-        if (IsMouseEnabled) UpdateDetailed(CoordsFrom(GetGlobalMousePosition()));
+            _activationGeneralLayer.ActivateTile(coords, memory);
+        foreach (var coords in SpecialCoords)
+            if (Memories.TryGetValue(coords, out ComponentUnitMemory memory))
+                _activationSpecialLayer.ActivateTile(coords, memory);
     }
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     [Export]
-    private ComponentProcessorMonitorActivationLayer _activationLayer;
+    private ComponentProcessorMonitorActivationGeneralLayer _activationGeneralLayer;
+    [Export]
+    private ComponentProcessorMonitorActivationSpecialLayer _activationSpecialLayer;
     [Export]
     private ComponentProcessorMonitorDisplayer _displayer;
     private readonly Dictionary<Vector2I, ComponentUnitMemory> _memories = [];
@@ -34,21 +39,10 @@ public partial class ComponentProcessorMonitor : Node2D, IMouseInputable
     void IMouseInputable.OnMouseMotion(Vector2 position, Vector2 relative, MouseButtonMask mask, MouseButton lastButton, Vector2? lastPosition)
     {
         if (!IsMouseEnabled) return;
-        UpdateDetailed(CoordsFrom(position));
         /* if (_mainLayer.GetActivation(CoordsFrom(position)))
             _popupPanel.ShowAt(_mainLayer.MapToLocal(CoordsFrom(position)));
         else _popupPanel.Hide(); */
     }
     private Vector2I CoordsFrom(Vector2 position)
-        => _activationLayer.LocalToMap(_activationLayer.ToLocal(position)) / new Vector2I(4, 4);
-    private void UpdateDetailed(Vector2I coords)
-    {
-        if (Memories.TryGetValue(_lastDetailedMemoryCoords, out ComponentUnitMemory last))
-            _activationLayer.Activate(_lastDetailedMemoryCoords, last, DetailedMemoriesCoords.Contains(_lastDetailedMemoryCoords));
-        if (Memories.TryGetValue(coords, out ComponentUnitMemory current))
-        {
-            _activationLayer.Activate(coords, current, true);
-            _lastDetailedMemoryCoords = coords;
-        }
-    }
+        => _activationSpecialLayer.LocalToMap(_activationSpecialLayer.ToLocal(position)) / new Vector2I(4, 4);
 }

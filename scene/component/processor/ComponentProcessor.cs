@@ -21,7 +21,7 @@ public partial class ComponentProcessor: Node2D
             Monitor.Memories[coords] = processable.GetCurrentMemory();
             if (processable is ComponentProcessorUnitInput ||
                 processable is ComponentProcessorUnitOutput)
-                Monitor.DetailedMemoriesCoords.Add(coords);
+                Monitor.SpecialCoords.Add(coords);
         }
         foreach (var (dir, picts) in inputPicts) InputReceived?.Invoke(this, new(dir, picts));
     }
