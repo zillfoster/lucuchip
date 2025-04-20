@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public class ComponentProcessorUnitBlack : ComponentProcessorUnit
 {
-    public ComponentProcessorUnitBlack() : base(true, false) {}
+    public ComponentProcessorUnitBlack() : base(true, true) {}
     protected override Dictionary<Directions, List<MonoPicture>> Send(Dictionary<Direction, List<MonoPicture>> received)
     {
         List<MonoPicture> sending = [];

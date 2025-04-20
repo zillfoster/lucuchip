@@ -14,7 +14,7 @@ public abstract class ComponentProcessorUnit(bool isInputLock,
     private readonly Dictionary<Direction, IComponentInputable> _neighbors = [];
     public void Receive(Direction from, List<MonoPicture> picts)
     {
-        if (isOutputLock && _currentMemory.OutputAccum.HasDirection(from)) return;
+        if (isOutputLock && _currentMemory.SendingPictures[from].Count != 0) return;
         foreach (MonoPicture pict in picts) _nextMemory.Receive(from, pict);
     }
     public IComponentInputable TryGetComponentInputable()
@@ -40,11 +40,11 @@ public abstract class ComponentProcessorUnit(bool isInputLock,
             if (picts.Count == 0) continue;
             DirectedAct(dirs, (d) =>
             {
-                if (_neighbors.ContainsKey(d) &&
-                    !(isInputLock && _currentMemory.InputAccum.HasDirection(d)))
+                if (_neighbors.TryGetValue(d, out IComponentInputable neighbor) &&
+                    !(isInputLock && _currentMemory.ReceivedPictures[d].Count != 0))
                 {
                     foreach (MonoPicture pict in picts) _nextMemory.Send(d, pict);
-                    _neighbors[d].Receive(d.ToOppositeDirection(), picts);
+                    neighbor.Receive(d.ToOppositeDirection(), picts);
                 }
             });
         }

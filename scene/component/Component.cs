@@ -18,7 +18,7 @@ public partial class Component : Node2D, ISavable
         _palette.Panel = _panel;
         _panel.Monitor = _monitor;
 
-        AddChild(new MouseInputHandler() {_panel, _palette});
+        AddChild(new MouseInputHandler() {_panel, _palette, _monitor});
     }
     public Dictionary<string, Variant> Save()
     {
@@ -53,15 +53,15 @@ public partial class Component : Node2D, ISavable
         }
         if (loadedData.ContainsKey("PanelTiles"))
         {
-            foreach (var (index, data) in
+            foreach (var (_, data) in
                     (Godot.Collections.Dictionary<int,
-                     Godot.Collections.Dictionary<string, int>>)(loadedData["PanelTiles"]))
+                     Godot.Collections.Dictionary<string, int>>)loadedData["PanelTiles"])
             {
-                if (data.ContainsKey("coords.X") &&
-                    data.ContainsKey("coords.Y") &&
-                    data.ContainsKey("tile"))
-                    _panel.DrawTile(new(data["coords.X"], data["coords.Y"]), 
-                                    (ComponentPanelTile)data["tile"]);
+                if (data.TryGetValue("coords.X", out int coordsX) &&
+                    data.TryGetValue("coords.Y", out int coordsY) &&
+                    data.TryGetValue("tile", out int tile))
+                    _panel.DrawTile(new(coordsX, coordsY), 
+                                    (ComponentPanelTile)tile);
             }
         }
     }

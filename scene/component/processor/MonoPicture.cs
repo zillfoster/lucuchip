@@ -50,12 +50,12 @@ public struct MonoPicture
     public static bool operator !=(MonoPicture a, MonoPicture b)
         => !(a == b);
     
-    public override bool Equals(object obj)
+    public override readonly bool Equals(object obj)
     {
         if (obj is MonoPicture other) return this == other;
         return false;
     }
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         HashCode code = new();
         code.Add(Height);
@@ -63,7 +63,7 @@ public struct MonoPicture
         foreach (MonoColor color in Data) code.Add(color);
         return code.ToHashCode();
     }
-    public override string ToString()
+    public override readonly string ToString()
     {
         string s = base.ToString() + ": ";
         foreach (MonoColor color in Data) s += color.ToString();

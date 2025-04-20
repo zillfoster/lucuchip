@@ -2,16 +2,12 @@ using System.Collections.Generic;
 
 public class ComponentUnitMemory
 {
-    public Directions InputAccum { get; private set; } = Directions.None;
-    public Directions OutputAccum { get; private set; } = Directions.None;
     public IReadOnlyDictionary<Direction, IReadOnlyList<MonoPicture>> ReceivedPictures => _receivedPictures;
     public IReadOnlyDictionary<Direction, IReadOnlyList<MonoPicture>> SendingPictures => _sendingPictures;
     public void Initialize()
     {
-        InputAccum = Directions.None;
-        OutputAccum = Directions.None;
-        foreach (var (dir, picts) in _accessableReceivedPictures) picts.Clear();
-        foreach (var (dir, picts) in _accessableSendingPictures) picts.Clear();
+        foreach (var (_, picts) in _accessableReceivedPictures) picts.Clear();
+        foreach (var (_, picts) in _accessableSendingPictures) picts.Clear();
     }
     public void CopyFrom(ComponentUnitMemory memory)
     {
@@ -25,13 +21,11 @@ public class ComponentUnitMemory
     }
     public void Receive(Direction dir, MonoPicture pict)
     {
-        InputAccum |= dir.ToDirections();
         if (!_accessableReceivedPictures[dir].Contains(pict)) 
             _accessableReceivedPictures[dir].Add(pict);
     }
     public void Send(Direction dir, MonoPicture pict)
     {
-        OutputAccum |= dir.ToDirections();
         if (!_accessableSendingPictures[dir].Contains(pict))
             _accessableSendingPictures[dir].Add(pict);
     }

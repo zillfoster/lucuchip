@@ -14,26 +14,24 @@ public partial class ComponentProcessor: Node2D
         DirectSetStatus(ProcessorStatus.Pausing);
         _roundCount = 0;
         _outputs.Clear();
-        Monitor.ClearMemory();
-        foreach (var (coords, processable) in _processables) processable.Initialize();
+        Monitor.Initialize();
+        foreach (var (coords, processable) in _processables)
+        {
+            processable.Initialize();
+            Monitor.Memories[coords] = processable.GetCurrentMemory();
+            if (processable is ComponentProcessorUnitInput ||
+                processable is ComponentProcessorUnitOutput)
+                Monitor.DetailedMemoriesCoords.Add(coords);
+        }
         foreach (var (dir, picts) in inputPicts) InputReceived?.Invoke(this, new(dir, picts));
     }
     public void Step()
     {
         if (Status == ProcessorStatus.Halting) return;
         _roundCount++;
-        foreach (var (coords, processable) in _processables) processable.StepInitialize();
+        foreach (var (_, processable) in _processables) processable.StepInitialize();
         foreach (var (coords, processable) in _processables) processable.StepProcess();
-
-        Monitor.ClearMemory();
-        foreach (var (coords, processable) in _processables) Monitor.AssignMemory(coords, processable.GetCurrentMemory());
-        if (_roundCount == 1)
-        {
-            foreach (var (coords, processable) in _processables)
-                if (processable is ComponentProcessorUnitInput input)
-                    Monitor.AssignActivation(coords, true);
-        }
-
+        Monitor.Refresh();
         if (_roundCount >= MAX_ROUND_COUNT || _outputs.Count != 0)
         {
             SetStatus(ProcessorStatus.Halting);
@@ -63,11 +61,13 @@ public partial class ComponentProcessor: Node2D
                 Step();
                 return;
             case ProcessorStatus.Processing:
-                _timer.WaitTime = 0.25;
+                Step();
+                _timer.WaitTime = 0.36;
                 _timer.Start();
                 return;
             case ProcessorStatus.Speeding:
-                _timer.WaitTime = 0.08;
+                Step();
+                _timer.WaitTime = 0.1;
                 _timer.Start();
                 return;
             default:
@@ -89,9 +89,9 @@ public partial class ComponentProcessor: Node2D
             DirectedAct(Directions.All, (d) =>
             {
                 Vector2I neighborCoords = coords + d.ToVector2I();
-                if (_processables.ContainsKey(neighborCoords))
+                if (_processables.TryGetValue(neighborCoords, out IComponentProcessable processable))
                 {
-                    IComponentInputable inputable = _processables[neighborCoords].TryGetComponentInputable();
+                    IComponentInputable inputable = processable.TryGetComponentInputable();
                     if (inputable != null) _processables[coords].SetNeighbor(d, inputable);
                 }
             });

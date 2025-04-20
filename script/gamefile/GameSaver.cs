@@ -6,8 +6,7 @@ public partial class GameSaver : Node
 {
     public static Variant? Load(string saveKey)
     {
-        if (_loadedData.ContainsKey(saveKey))
-            return _loadedData[saveKey];
+        if (_loadedData.TryGetValue(saveKey, out Variant method)) return method;
         else return null;
     }
     public static void Save(string saveKey, Func<Variant> saveMethod)
@@ -51,8 +50,8 @@ public partial class GameSaver : Node
             foreach(var (k, v) in loadedData) _loadedData.Add(k, v);
         }
 
-        if (!_loadedData.ContainsKey("version")) _loadedData.Clear();
-        else if ((string)_loadedData["version"] != VERSION) OnVersionChanged();
+        if (!_loadedData.TryGetValue("version", out Variant version)) _loadedData.Clear();
+        else if ((string)version != VERSION) OnVersionChanged();
         GameSaver.Save("version", () => VERSION);
     }
     public override void _Notification(int what)

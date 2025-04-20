@@ -41,7 +41,7 @@ public struct ComponentProcessorUnitLabel
     {
         if (a.Type != ComponentProcessorUnitLabelType.Component) return a.Type == b.Type;
         if (b.Type != ComponentProcessorUnitLabelType.Component) return false;
-        foreach (var (coords, label) in a.ContainingLabels)
+        foreach (var (coords, _) in a.ContainingLabels)
             if (!b.ContainingLabels.ContainsKey(coords) ||
                 (b.ContainingLabels[coords] != a.ContainingLabels[coords]))
                 return false;
@@ -49,12 +49,12 @@ public struct ComponentProcessorUnitLabel
     }
     public static bool operator !=(ComponentProcessorUnitLabel a, ComponentProcessorUnitLabel b)
         => !(a == b);
-    public override bool Equals(object obj)
+    public override readonly bool Equals(object obj)
     {
         if (obj is ComponentProcessorUnitLabel other) return this == other;
         return false;
     }
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         HashCode code = new();
         code.Add(Type);

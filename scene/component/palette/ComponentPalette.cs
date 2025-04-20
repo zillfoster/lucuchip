@@ -43,10 +43,13 @@ public partial class ComponentPalette : Node2D, IMouseInputable
                 if (_cursorLayer.Selection == coords) return;
                 _cursorLayer.Selection = coords;
                 Panel.Brush = UnitFrom(choice);
-                Panel.Monitor.ClearMemory();
+                Panel.Monitor.IsMouseEnabled = false;
+                Panel.Monitor.Initialize();
                 return;
             case ComponentPaletteChoice.Clear:
                 Panel.ClearTile();
+                Panel.Monitor.IsMouseEnabled = false;
+                Panel.Monitor.Initialize();
                 return;
             case ComponentPaletteChoice.GridOn:
                 _mainLayer.IsGridded = false;
@@ -110,8 +113,12 @@ public partial class ComponentPalette : Node2D, IMouseInputable
     }
     private void StartProcess()
     {
-        Panel.Processor = new(Panel);
-        Panel.Processor.Monitor = Panel.Monitor;
+        Panel.Monitor.Initialize();
+        Panel.Monitor.IsMouseEnabled = true;
+        Panel.Processor = new(Panel)
+        {
+            Monitor = Panel.Monitor
+        };
         Panel.AddChild(Panel.Processor);
         Panel.Processor.Halted += (sender, e) => { EndProcess(); };
         Panel.Processor.Start(new()
@@ -121,6 +128,7 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             {Direction.Down,  new() { new(1, 1, MonoPicture.MonoColor.Black) }},
             {Direction.Right, new() { new(1, 1, MonoPicture.MonoColor.Black) }},
         });
+        Panel.Processor.Step();
         Panel.IsEditable = false;
         Panel.Brush = ComponentPanelTile.None;
         _cursorLayer.Selection = null;
