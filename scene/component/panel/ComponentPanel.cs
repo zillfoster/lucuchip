@@ -1,6 +1,7 @@
 using Godot;
 using static System.Math;
 using System.Collections.Generic;
+using System.IO.Compression;
 
 public partial class ComponentPanel : Node2D, IMouseInputable
 {
@@ -47,7 +48,7 @@ public partial class ComponentPanel : Node2D, IMouseInputable
     public bool IsGridded
     {
         get => _isGridded;
-        set 
+        set
         {
             _isGridded = value;
             _backgroundLayer.SetBackground(_field, _isGridded);
@@ -56,8 +57,7 @@ public partial class ComponentPanel : Node2D, IMouseInputable
 
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
-    [Export]
-    private Rect2I _field = new(0, 0, 0, 0);
+    private Rect2I _field = new(4, 1, 16, 16);
     [Export]
     private bool _isGridded = true;
     [Export]
@@ -71,16 +71,18 @@ public partial class ComponentPanel : Node2D, IMouseInputable
     {
         base._Ready();
         _tileLength = _mainLayer.TileSet.TileSize.X;
+        Vector2I coords = CoordsFrom(GetGlobalMousePosition());
+        _cursorLayer.SetCursor(coords, ComponentPanelTile.None, _mainLayer.GetTile(coords), IsEditable);
     }
-    
+
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)
     {
         Vector2I coords = CoordsFrom(position);
-        ComponentPanelTile tile = isPressed? GetCurrentBrush(button): Brush;
+        ComponentPanelTile tile = isPressed ? GetCurrentBrush(button) : Brush;
         if (FieldContains(coords))
         {
             if (isPressed && IsEditable) _mainLayer.AssignTile(coords, tile);
-            _cursorLayer.SetCursor(coords, tile, _mainLayer.GetTile(coords));
+            _cursorLayer.SetCursor(coords, tile, _mainLayer.GetTile(coords), IsEditable);
         }
     }
     void IMouseInputable.OnMouseMotion(Vector2 position, Vector2 relative, MouseButtonMask mask, MouseButton lastButton, Vector2? lastPosition)
@@ -92,17 +94,18 @@ public partial class ComponentPanel : Node2D, IMouseInputable
             if (IsEditable &&
                 lastButton != MouseButton.None &&
                 lastPosition.HasValue &&
-                FieldContains(lastPosition.Value)) DrawThrough(position, relative, brush); 
-            _cursorLayer.SetCursor(coords, brush, _mainLayer.GetTile(coords));
+                FieldContains(lastPosition.Value)) DrawThrough(position, relative, brush);
+            _cursorLayer.SetCursor(coords, brush, _mainLayer.GetTile(coords), IsEditable);
         }
         else _cursorLayer.Clear();
     }
     private Vector2I CoordsFrom(Vector2 position)
         => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));
     private ComponentPanelTile GetCurrentBrush(MouseButton button)
-        => button == MouseButton.Right? ComponentPanelTile.Erase: Brush;
+        => button == MouseButton.Right ?
+           (IsEditable ? ComponentPanelTile.Erase : ComponentPanelTile.None) : Brush;
     private bool FieldContains(Vector2I coords)
-        => _field.HasArea()? _field.HasPoint(coords): false;
+        => _field.HasArea() ? _field.HasPoint(coords) : false;
     private bool FieldContains(Vector2 position)
         => FieldContains(CoordsFrom(position));
     private void DrawThrough(Vector2 position, Vector2 relative, ComponentPanelTile brush)

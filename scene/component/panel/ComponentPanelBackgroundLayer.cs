@@ -9,7 +9,7 @@ public partial class ComponentPanelBackgroundLayer : TileMapLayer
             for (int j = field.Position.Y; j < (field.Position + field.Size).Y; j++)
                 SetCell(new Vector2I(i, j), 
                         _sourceID, 
-                        ComponentPanelBackgroundLayer.AtlasCoordsFrom(isGridded));
+                        AtlasCoordsFrom(isGridded));
     }
 
     // Below this comment, all the members are (somehow) private.

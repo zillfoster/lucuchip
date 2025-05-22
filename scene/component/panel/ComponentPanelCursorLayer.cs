@@ -2,12 +2,14 @@ using Godot;
 
 public partial class ComponentPanelCursorLayer : TileMapLayer
 {
-    public void SetCursor(Vector2I coords, ComponentPanelTile chosen, ComponentPanelTile hovering)
+    public void SetCursor(Vector2I coords, ComponentPanelTile chosen, ComponentPanelTile hovering, bool isEditable)
     {
         Clear();
-        if (chosen == ComponentPanelTile.None || chosen == hovering) return;
-        Vector2I atlasCoords = ComponentPanelCursorLayer.AtlasCoordsFrom(chosen);
-        if (chosen == ComponentPanelTile.Erase && hovering == ComponentPanelTile.Red) atlasCoords = _altEraseAtlasCoords;
+        if (!isEditable) return;
+        if (chosen == hovering && chosen != ComponentPanelTile.None) return;
+        Vector2I atlasCoords = AtlasCoordsFrom(chosen);
+        if (chosen == ComponentPanelTile.None) atlasCoords = _standardAtlasCoords;
+        else if (chosen == ComponentPanelTile.Erase && hovering == ComponentPanelTile.Red) atlasCoords = _altEraseAtlasCoords;
         SetCell(coords, _sourceID, atlasCoords);
     }
 
@@ -21,21 +23,22 @@ public partial class ComponentPanelCursorLayer : TileMapLayer
     }
     private static Vector2I AtlasCoordsFrom(ComponentPanelTile tile)
     {
-        switch(tile)
+        return tile switch
         {
-            case ComponentPanelTile.Black:    return new Vector2I(0, 1);
-            case ComponentPanelTile.White:    return new Vector2I(1, 1);
-            case ComponentPanelTile.Red:      return new Vector2I(2, 1);
-            case ComponentPanelTile.Blue:     return new Vector2I(3, 1);
-            case ComponentPanelTile.Green:    return new Vector2I(4, 1);
-            case ComponentPanelTile.Yellow:   return new Vector2I(5, 1);
-            case ComponentPanelTile.Purple:   return new Vector2I(6, 1);
-            case ComponentPanelTile.Orange:   return new Vector2I(7, 1);
-            case ComponentPanelTile.Input:    return new Vector2I(0, 3);
-            case ComponentPanelTile.Output:   return new Vector2I(1, 3);
-            case ComponentPanelTile.Erase:    return new Vector2I(2, 2);
-            default:                          return new Vector2I(-1, -1);
-        }
+            ComponentPanelTile.Black => new Vector2I(0, 1),
+            ComponentPanelTile.White => new Vector2I(1, 1),
+            ComponentPanelTile.Red => new Vector2I(2, 1),
+            ComponentPanelTile.Blue => new Vector2I(3, 1),
+            ComponentPanelTile.Green => new Vector2I(4, 1),
+            ComponentPanelTile.Yellow => new Vector2I(5, 1),
+            ComponentPanelTile.Purple => new Vector2I(6, 1),
+            ComponentPanelTile.Orange => new Vector2I(7, 1),
+            ComponentPanelTile.Input => new Vector2I(0, 3),
+            ComponentPanelTile.Output => new Vector2I(1, 3),
+            ComponentPanelTile.Erase => new Vector2I(2, 2),
+            _ => new Vector2I(-1, -1),
+        };
     }
     private static readonly Vector2I _altEraseAtlasCoords = new(2, 3);
+    private static readonly Vector2I _standardAtlasCoords = new(2, 4);
 }

@@ -5,10 +5,10 @@ public partial class ComponentPanelMainLayer : TileMapLayer
     public void AssignTile(Vector2I coords, ComponentPanelTile tile)
     {
         if (tile == ComponentPanelTile.None) return;
-        SetCell(coords, _sourceID, ComponentPanelMainLayer.AtlasCoordsFrom(tile));
+        SetCell(coords, _sourceID, AtlasCoordsFrom(tile));
     }
     public ComponentPanelTile GetTile(Vector2I coords)
-        => ComponentPanelMainLayer.TileFrom(GetCellAtlasCoords(coords));
+        => TileFrom(GetCellAtlasCoords(coords));
     
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
@@ -20,36 +20,36 @@ public partial class ComponentPanelMainLayer : TileMapLayer
     }
     private static Vector2I AtlasCoordsFrom(ComponentPanelTile tile)
     {
-        switch(tile)
+        return tile switch
         {
-            case ComponentPanelTile.Black:    return new Vector2I(0, 0);
-            case ComponentPanelTile.White:    return new Vector2I(1, 0);
-            case ComponentPanelTile.Red:      return new Vector2I(2, 0);
-            case ComponentPanelTile.Blue:     return new Vector2I(3, 0);
-            case ComponentPanelTile.Green:    return new Vector2I(4, 0);
-            case ComponentPanelTile.Yellow:   return new Vector2I(5, 0);
-            case ComponentPanelTile.Purple:   return new Vector2I(6, 0);
-            case ComponentPanelTile.Orange:   return new Vector2I(7, 0);
-            case ComponentPanelTile.Input:    return new Vector2I(0, 2);
-            case ComponentPanelTile.Output:   return new Vector2I(1, 2);
-            default:                return new Vector2I(-1, -1);
-        }
+            ComponentPanelTile.Black => new Vector2I(0, 0),
+            ComponentPanelTile.White => new Vector2I(1, 0),
+            ComponentPanelTile.Red => new Vector2I(2, 0),
+            ComponentPanelTile.Blue => new Vector2I(3, 0),
+            ComponentPanelTile.Green => new Vector2I(4, 0),
+            ComponentPanelTile.Yellow => new Vector2I(5, 0),
+            ComponentPanelTile.Purple => new Vector2I(6, 0),
+            ComponentPanelTile.Orange => new Vector2I(7, 0),
+            ComponentPanelTile.Input => new Vector2I(0, 2),
+            ComponentPanelTile.Output => new Vector2I(1, 2),
+            _ => new Vector2I(-1, -1),
+        };
     }
     private static ComponentPanelTile TileFrom(Vector2I atlasCoords)
     {
-        switch(atlasCoords)
+        return atlasCoords switch
         {
-            case Vector2I(0, 0):   return ComponentPanelTile.Black;
-            case Vector2I(1, 0):   return ComponentPanelTile.White;
-            case Vector2I(2, 0):   return ComponentPanelTile.Red;
-            case Vector2I(3, 0):   return ComponentPanelTile.Blue;
-            case Vector2I(4, 0):   return ComponentPanelTile.Green;
-            case Vector2I(5, 0):   return ComponentPanelTile.Yellow;
-            case Vector2I(6, 0):   return ComponentPanelTile.Purple;
-            case Vector2I(7, 0):   return ComponentPanelTile.Orange;
-            case Vector2I(0, 2):   return ComponentPanelTile.Input;
-            case Vector2I(1, 2):   return ComponentPanelTile.Output;
-            default:               return ComponentPanelTile.None;
-        }
+            Vector2I(0, 0) => ComponentPanelTile.Black,
+            Vector2I(1, 0) => ComponentPanelTile.White,
+            Vector2I(2, 0) => ComponentPanelTile.Red,
+            Vector2I(3, 0) => ComponentPanelTile.Blue,
+            Vector2I(4, 0) => ComponentPanelTile.Green,
+            Vector2I(5, 0) => ComponentPanelTile.Yellow,
+            Vector2I(6, 0) => ComponentPanelTile.Purple,
+            Vector2I(7, 0) => ComponentPanelTile.Orange,
+            Vector2I(0, 2) => ComponentPanelTile.Input,
+            Vector2I(1, 2) => ComponentPanelTile.Output,
+            _ => ComponentPanelTile.None,
+        };
     }
 }

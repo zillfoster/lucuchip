@@ -17,6 +17,7 @@ public partial class Component : Node2D, ISavable
 
         _palette.Panel = _panel;
         _panel.Monitor = _monitor;
+        _monitor.
 
         AddChild(new MouseInputHandler() {_panel, _palette, _monitor});
     }

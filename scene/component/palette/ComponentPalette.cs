@@ -15,15 +15,24 @@ public partial class ComponentPalette : Node2D, IMouseInputable
     [Export]
     private ComponentPaletteMainLayer _mainLayer;
     [Export]
-    private ComponentPaletteCursorLayer _cursorLayer;
+    private CursorLayer _cursorLayer;
 
+    public override void _Ready()
+    {
+        base._Ready();
+        _cursorLayer.Cursor.Style = new(_cursorLayer.GetSourceId(0), new(2, 4));
+        _cursorLayer.Selection.Style = new(_cursorLayer.GetSourceId(0), new(3, 4));
+        _cursorLayer.CursorField.Add(_field);
+        _cursorLayer.SelectionField.Add(_field);
+    }
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)
     {
-        Vector2I coords = CoordsFrom(position);
-        if (!FieldContains(coords)) return;
+        
+        Vector2I coords = _mainLayer.CoordsFrom(position);
+        if (!_field.Contains(coords)) return;
         if (!isPressed)
         {
-            _cursorLayer.SetCursor(coords);
+            _cursorLayer.Cursor.Coords = coords;
             return;
         }
         ComponentPaletteChoice choice = _mainLayer.GetChoice(coords);
@@ -40,8 +49,8 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             case ComponentPaletteChoice.Input:
             case ComponentPaletteChoice.Output:
             case ComponentPaletteChoice.Erase:
-                if (_cursorLayer.Selection == coords) return;
-                _cursorLayer.Selection = coords;
+                if (_cursorLayer.Selection.Coords == coords) return;
+                _cursorLayer.Selection.Coords = coords;
                 Panel.Brush = UnitFrom(choice);
                 Panel.Monitor.IsMouseEnabled = false;
                 Panel.Monitor.Initialize();
@@ -74,23 +83,13 @@ public partial class ComponentPalette : Node2D, IMouseInputable
             if (Panel.Brush == UnitFrom(choice))
             {
                 Panel.Brush = ComponentPanelTile.None;
-                _cursorLayer.Selection = null;
-                _cursorLayer.SetCursor(coords);
+                _cursorLayer.Selection.Coords = null;
+                _cursorLayer.Cursor.Coords = coords;
             }
         }
     }
     void IMouseInputable.OnMouseMotion(Vector2 position, Vector2 relative, MouseButtonMask mask, MouseButton lastButton, Vector2? lastPosition)
-    {
-        Vector2I coords = CoordsFrom(position);
-        if (FieldContains(coords) &&
-            _mainLayer.GetChoice(coords) != ComponentPaletteChoice.None)
-            _cursorLayer.SetCursor(coords);
-        else _cursorLayer.Selection = _cursorLayer.Selection;
-    }
-    private Vector2I CoordsFrom(Vector2 position)
-        => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));
-    private bool FieldContains(Vector2I coords)
-        => _field.HasArea()? _field.HasPoint(coords): false;
+        => _cursorLayer.Cursor.Coords = _cursorLayer.CoordsFrom(position);
     private void SetProcessStatus(ProcessorStatus status, Vector2I coords)
     {
         if (_mainLayer.Status == PaletteStatus.Drawing) StartProcess();
@@ -131,7 +130,7 @@ public partial class ComponentPalette : Node2D, IMouseInputable
         Panel.Processor.Step();
         Panel.IsEditable = false;
         Panel.Brush = ComponentPanelTile.None;
-        _cursorLayer.Selection = null;
+        _cursorLayer.Selection.Coords = null;
         _mainLayer.SetStatus(PaletteStatus.Pausing);
     }
     private void EndProcess()
