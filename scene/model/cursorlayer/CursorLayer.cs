@@ -10,11 +10,11 @@ public partial class CursorLayer : TileMapLayer, IMouseInputable
     /// <summary>
     /// 光标的瓦片信息。
     /// </summary>
-    public LayerTile Cursor { get; }
+    public LayerTile Cursor { get; private set; }
     /// <summary>
     /// 光标选中的瓦片信息。
     /// </summary>
-    public LayerTile Selection { get; }
+    public LayerTile Selection { get; private set; }
     /// <summary>
     /// 光标生效的区域。
     /// </summary>
@@ -36,14 +36,14 @@ public partial class CursorLayer : TileMapLayer, IMouseInputable
         TryAssignTile(Cursor.Coords, Cursor.Style);
         TryAssignTile(Selection.Coords, Selection.Style);
     }
-
-    // Below this comment, all the members are (somehow) private.
-    // No need to read them unless you are modifying this class.
-    public CursorLayer(bool isAutoRefresh = true,
-                       Action<Vector2I?, SetTile> cursorCoordsSet = null,
-                       Action<Vector2I?, SetTile> cursorStyleSet = null,
-                       Action<Vector2I?, SetTile> selectionCoordsSet = null,
-                       Action<Vector2I?, SetTile> selectionStyleSet = null)
+    /// <summary>
+    /// 初始化光标设置。
+    /// </summary>
+    public void Init(bool isAutoRefresh = true,
+                     Action<Vector2I?, SetTile> cursorCoordsSet = null,
+                     Action<Vector2I?, SetTile> cursorStyleSet = null,
+                     Action<Vector2I?, SetTile> selectionCoordsSet = null,
+                     Action<Vector2I?, SetTile> selectionStyleSet = null)
     {
         if (isAutoRefresh)
         {
@@ -55,6 +55,10 @@ public partial class CursorLayer : TileMapLayer, IMouseInputable
         Cursor = new(cursorCoordsSet, cursorStyleSet, (coords) => coords.IsValidIn(CursorField));
         Selection = new(selectionCoordsSet, selectionStyleSet, (coords) => coords.IsValidIn(SelectionField));
     }
+
+    // Below this comment, all the members are (somehow) private.
+    // No need to read them unless you are modifying this class.
+    public CursorLayer() => Init();
     private void TryAssignTile(Vector2I? coords, SetTile style)
     {
         if (coords.HasValue && style != null)
