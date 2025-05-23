@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -26,23 +27,33 @@ public partial class CursorLayer : TileMapLayer, IMouseInputable
     /// 光标能否选中网格。
     /// </summary>
     public bool IsSelectable { get; set; } = true;
-
-    // Below this comment, all the members are (somehow) private.
-    // No need to read them unless you are modifying this class.
-    public CursorLayer()
-    {
-        Cursor = new((_, _) => Refresh(),
-                        (_, _) => Refresh(),
-                        (coords) => coords.IsValidIn(CursorField));
-        Selection = new((_, _) => Refresh(),
-                        (_, _) => Refresh(),
-                        (coords) => coords.IsValidIn(SelectionField));
-    }
-    private void Refresh()
+    /// <summary>
+    /// 刷新光标状态。
+    /// </summary>
+    public void Refresh()
     {
         Clear();
         TryAssignTile(Cursor.Coords, Cursor.Style);
         TryAssignTile(Selection.Coords, Selection.Style);
+    }
+
+    // Below this comment, all the members are (somehow) private.
+    // No need to read them unless you are modifying this class.
+    public CursorLayer(bool isAutoRefresh = true,
+                       Action<Vector2I?, SetTile> cursorCoordsSet = null,
+                       Action<Vector2I?, SetTile> cursorStyleSet = null,
+                       Action<Vector2I?, SetTile> selectionCoordsSet = null,
+                       Action<Vector2I?, SetTile> selectionStyleSet = null)
+    {
+        if (isAutoRefresh)
+        {
+            cursorCoordsSet = (_, _) => Refresh();
+            cursorStyleSet = (_, _) => Refresh();
+            selectionCoordsSet = (_, _) => Refresh();
+            selectionStyleSet = (_, _) => Refresh();
+        }
+        Cursor = new(cursorCoordsSet, cursorStyleSet, (coords) => coords.IsValidIn(CursorField));
+        Selection = new(selectionCoordsSet, selectionStyleSet, (coords) => coords.IsValidIn(SelectionField));
     }
     private void TryAssignTile(Vector2I? coords, SetTile style)
     {
