@@ -23,7 +23,7 @@ public partial class GameSaver : Node
     // Below this comment, all the members are (somehow) private.
     // No need to read them unless you are modifying this class.
     private static GameSaver This;
-    private const string VERSION = "demo 0.2";
+    private const string VERSION = "demo 1.0";
     private const string SAVE_PATH = "user://save.json";
     private static readonly Dictionary<string, Variant> _loadedData = [];
     private static readonly Dictionary<string, Func<Variant>> _willSaveData = [];
