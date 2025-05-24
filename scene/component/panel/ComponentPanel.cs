@@ -1,7 +1,6 @@
 using Godot;
 using static System.Math;
 using System.Collections.Generic;
-using System.IO.Compression;
 
 public partial class ComponentPanel : Node2D, IMouseInputable
 {
@@ -65,29 +64,37 @@ public partial class ComponentPanel : Node2D, IMouseInputable
     [Export]
     private ComponentPanelMainLayer _mainLayer;
     [Export]
-    private ComponentPanelCursorLayer _cursorLayer;
+    private ComponentPanelShadowLayer _shadowLayer;
+    [Export]
+    private CursorLayer _cursorLayer;
     private int _tileLength;
     public override void _Ready()
     {
         base._Ready();
         _tileLength = _mainLayer.TileSet.TileSize.X;
         Vector2I coords = CoordsFrom(GetGlobalMousePosition());
-        _cursorLayer.SetCursor(coords, ComponentPanelTile.None, _mainLayer.GetTile(coords), IsEditable);
+        _shadowLayer.SetShadow(coords, ComponentPanelTile.None, _mainLayer.GetTile(coords), IsEditable);
+        _cursorLayer.Cursor.Style = new(_cursorLayer.GetSourceId(0), new(2, 4));
+        _cursorLayer.Selection.Style = new(_cursorLayer.GetSourceId(0), new(3, 4));
+        _cursorLayer.CursorField.Add(_field);
+        _cursorLayer.SelectionField.Add(_field);
     }
 
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)
     {
         Vector2I coords = CoordsFrom(position);
+        _cursorLayer.Cursor.Coords = coords;
         ComponentPanelTile tile = isPressed ? GetCurrentBrush(button) : Brush;
         if (FieldContains(coords))
         {
             if (isPressed && IsEditable) _mainLayer.AssignTile(coords, tile);
-            _cursorLayer.SetCursor(coords, tile, _mainLayer.GetTile(coords), IsEditable);
+            _shadowLayer.SetShadow(coords, tile, _mainLayer.GetTile(coords), IsEditable);
         }
     }
     void IMouseInputable.OnMouseMotion(Vector2 position, Vector2 relative, MouseButtonMask mask, MouseButton lastButton, Vector2? lastPosition)
     {
         Vector2I coords = CoordsFrom(position);
+        _cursorLayer.Cursor.Coords = coords;
         ComponentPanelTile brush = GetCurrentBrush(lastButton);
         if (FieldContains(coords))
         {
@@ -95,9 +102,9 @@ public partial class ComponentPanel : Node2D, IMouseInputable
                 lastButton != MouseButton.None &&
                 lastPosition.HasValue &&
                 FieldContains(lastPosition.Value)) DrawThrough(position, relative, brush);
-            _cursorLayer.SetCursor(coords, brush, _mainLayer.GetTile(coords), IsEditable);
+            _shadowLayer.SetShadow(coords, brush, _mainLayer.GetTile(coords), IsEditable);
         }
-        else _cursorLayer.Clear();
+        else _shadowLayer.Clear();
     }
     private Vector2I CoordsFrom(Vector2 position)
         => _mainLayer.LocalToMap(_mainLayer.ToLocal(position));

@@ -1,15 +1,14 @@
 using Godot;
 
-public partial class ComponentPanelCursorLayer : TileMapLayer
+public partial class ComponentPanelShadowLayer : TileMapLayer
 {
-    public void SetCursor(Vector2I coords, ComponentPanelTile chosen, ComponentPanelTile hovering, bool isEditable)
+    public void SetShadow(Vector2I coords, ComponentPanelTile chosen, ComponentPanelTile hovering, bool isEditable)
     {
         Clear();
         if (!isEditable) return;
-        if (chosen == hovering && chosen != ComponentPanelTile.None) return;
+        if (chosen == hovering || chosen == ComponentPanelTile.None) return;
         Vector2I atlasCoords = AtlasCoordsFrom(chosen);
-        if (chosen == ComponentPanelTile.None) atlasCoords = _standardAtlasCoords;
-        else if (chosen == ComponentPanelTile.Erase && hovering == ComponentPanelTile.Red) atlasCoords = _altEraseAtlasCoords;
+        if (chosen == ComponentPanelTile.Erase && hovering == ComponentPanelTile.Red) atlasCoords = _altEraseAtlasCoords;
         SetCell(coords, _sourceID, atlasCoords);
     }
 
@@ -40,5 +39,4 @@ public partial class ComponentPanelCursorLayer : TileMapLayer
         };
     }
     private static readonly Vector2I _altEraseAtlasCoords = new(2, 3);
-    private static readonly Vector2I _standardAtlasCoords = new(2, 4);
 }

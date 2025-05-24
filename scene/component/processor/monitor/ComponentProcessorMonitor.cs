@@ -49,6 +49,13 @@ public partial class ComponentProcessorMonitor : Node2D, IMouseInputable
             _cursorLayer.Clear();
             return;
         }
+        if (button == MouseButton.Right && isPressed)
+        {
+            IsMouseEnabled = false;
+            Initialize();
+            _cursorLayer.Clear();
+            return;
+        }
         ((IMouseInputable)_cursorLayer).OnMouseButton(position, button, isPressed);
     }
 

@@ -2,7 +2,7 @@ using Godot;
 
 public partial class ComponentPaletteBackgroundLayer : TileMapLayer
 {
-    public void SetBackground(Vector2I coords, bool isGridded)
+    public void SetBackground(Vector2I coords)
     {
         Clear();
         SetCell(coords, _sourceID, _backgroundAtlasCoords);

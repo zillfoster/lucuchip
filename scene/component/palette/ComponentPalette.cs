@@ -27,7 +27,6 @@ public partial class ComponentPalette : Node2D, IMouseInputable
     }
     void IMouseInputable.OnMouseButton(Vector2 position, MouseButton button, bool isPressed)
     {
-        
         Vector2I coords = _mainLayer.CoordsFrom(position);
         if (!_field.Contains(coords)) return;
         if (!isPressed)
