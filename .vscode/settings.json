@@ -1,0 +1,14 @@
+{
+    "files.exclude": {
+    "**/*.uid": true,
+    "**/*.import": true,
+    "**/*.aseprite": true,
+    "**/*.godot": true,
+    "icon.svg": true,
+    ".git*": true,
+    ".editorconfig": true,
+    ".vscode": true,
+    "*.csproj": true,
+    "*.sln": true,
+    }
+}
